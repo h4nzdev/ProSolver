@@ -1,0 +1,1555 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>DiscreteMath Pro • Advanced Solver Suite</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f8fafd;
+        --surface: #ffffff;
+        --surface2: #f1f5fb;
+        --blue: #3b6df0;
+        --blue-light: #eef3ff;
+        --blue-mid: #ccd9ff;
+        --navy: #0c1b38;
+        --text: #1e293b;
+        --muted: #64748b;
+        --border: #e2e8f0;
+        --gold: #f59e0b;
+        --green: #10b981;
+        --green-bg: #ecfdf5;
+        --red: #ef4444;
+        --red-bg: #fef2f2;
+        --purple: #8b5cf6;
+        --purple-light: #f5f3ff;
+        --orange: #f97316;
+        --orange-light: #fff7ed;
+        --teal: #14b8a6;
+        --teal-light: #f0fdfa;
+        --shadow: 0 4px 20px rgba(59, 109, 240, 0.06);
+        --shadow-lg: 0 20px 40px -12px rgba(59, 109, 240, 0.12);
+        --radius: 20px;
+        --radius-sm: 14px;
+        --transition: 0.2s cubic-bezier(0.2, 0, 0, 1);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background: linear-gradient(
+          135deg,
+          #f8fafd 0%,
+          #eef2f9 50%,
+          #f5f7ff 100%
+        );
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      /* Glass header */
+      header {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+        padding: 0 5%;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+      }
+      .header-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 72px;
+        max-width: 1200px;
+        margin: 0 auto;
+        gap: 1rem;
+      }
+      .logo {
+        font-size: 1.4rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--navy);
+        flex-shrink: 0;
+      }
+      .logo i {
+        color: var(--blue);
+        font-size: 1.8rem;
+      }
+      .logo span {
+        background: linear-gradient(135deg, #1e293b, #0c1b38);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .logo sub {
+        font-size: 0.65rem;
+        color: var(--muted);
+        margin-left: 4px;
+        font-weight: 500;
+      }
+
+      .tab-nav {
+        display: flex;
+        gap: 4px;
+        background: var(--surface2);
+        border-radius: 40px;
+        padding: 5px;
+        border: 1px solid var(--border);
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .tab-btn {
+        padding: 0.5rem 0.9rem;
+        border-radius: 30px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        border: none;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all var(--transition);
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      .tab-btn i {
+        font-size: 0.8rem;
+      }
+      .tab-btn.active {
+        background: var(--blue);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(59, 109, 240, 0.3);
+      }
+      .tab-btn:hover:not(.active) {
+        color: var(--navy);
+        background: rgba(204, 217, 255, 0.5);
+      }
+
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2.5rem 5% 4rem;
+      }
+
+      .hero-intro {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        animation: fadeUp 0.5s ease;
+      }
+      .hero-intro h1 {
+        font-size: clamp(2rem, 5vw, 2.8rem);
+        font-weight: 800;
+        letter-spacing: -1px;
+        color: var(--navy);
+        margin-bottom: 0.4rem;
+      }
+      .hero-intro h1 em {
+        background: linear-gradient(135deg, var(--blue), var(--purple));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-style: normal;
+      }
+      .hero-intro p {
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(59, 109, 240, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 0 8px rgba(59, 109, 240, 0);
+        }
+      }
+
+      .tool-panel {
+        display: none;
+        animation: fadeUp 0.4s ease;
+      }
+      .tool-panel.active {
+        display: block;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 2rem;
+        box-shadow: var(--shadow);
+        margin-bottom: 1.5rem;
+        transition: box-shadow 0.25s;
+        position: relative;
+        overflow: hidden;
+      }
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          var(--blue),
+          var(--purple),
+          var(--teal)
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .card:hover::before {
+        opacity: 1;
+      }
+      .card:hover {
+        box-shadow: var(--shadow-lg);
+      }
+
+      .card-title {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--navy);
+        margin-bottom: 0.3rem;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+      }
+      .card-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        background: var(--blue-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        color: var(--blue);
+      }
+      .card-desc {
+        color: var(--muted);
+        font-size: 0.88rem;
+        margin-bottom: 1.2rem;
+      }
+
+      .input-row {
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.8rem;
+      }
+      input[type="number"],
+      input[type="text"],
+      select {
+        flex: 1;
+        min-width: 120px;
+        background: var(--surface2);
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        color: var(--navy);
+        outline: none;
+        transition: all var(--transition);
+      }
+      input:focus,
+      select:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 4px rgba(59, 109, 240, 0.1);
+      }
+
+      .btn-solve {
+        background: var(--blue);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 1.6rem;
+        font-size: 0.9rem;
+        font-weight: 700;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        cursor: pointer;
+        transition: all var(--transition);
+        box-shadow: 0 4px 14px rgba(59, 109, 240, 0.25);
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .btn-solve:hover {
+        background: #2559e0;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(59, 109, 240, 0.35);
+      }
+
+      /* Example chips */
+      .examples-row {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+      }
+      .example-chip {
+        background: var(--surface2);
+        border: 1.5px solid var(--border);
+        border-radius: 20px;
+        padding: 0.45rem 0.9rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all var(--transition);
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        white-space: nowrap;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .example-chip i {
+        font-size: 0.7rem;
+        color: var(--blue);
+      }
+      .example-chip:hover {
+        background: var(--blue-light);
+        border-color: var(--blue);
+        color: var(--blue);
+        transform: translateY(-1px);
+      }
+      .example-chip:active {
+        animation: pulse 0.6s ease;
+      }
+      .example-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .example-label i {
+        color: var(--gold);
+        font-size: 0.7rem;
+      }
+
+      .result-box {
+        background: var(--blue-light);
+        border: 1.5px solid var(--blue-mid);
+        border-radius: 16px;
+        padding: 1.2rem 1.5rem;
+        margin-top: 1rem;
+        display: none;
+      }
+      .result-box.show {
+        display: block;
+        animation: fadeUp 0.35s ease;
+      }
+      .result-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--blue);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 0.4rem;
+      }
+      .result-value {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--navy);
+      }
+      .result-sub {
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin-top: 0.2rem;
+      }
+
+      .steps-list {
+        margin-top: 0.8rem;
+        list-style: none;
+      }
+      .steps-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.7rem;
+        font-size: 0.85rem;
+        color: var(--muted);
+        padding: 0.4rem 0;
+        border-bottom: 1px dashed var(--blue-mid);
+      }
+      .steps-list li:last-child {
+        border-bottom: none;
+      }
+      .step-num {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--blue);
+        color: #fff;
+        font-size: 0.65rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .steps-list li span {
+        color: var(--navy);
+        font-weight: 600;
+      }
+
+      .home-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+      .home-tool-card {
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.8rem 1.2rem;
+        cursor: pointer;
+        transition: all 0.25s;
+        text-align: center;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+      }
+      .home-tool-card::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 20%;
+        right: 20%;
+        height: 3px;
+        background: var(--blue);
+        border-radius: 3px 3px 0 0;
+        transform: scaleX(0);
+        transition: transform 0.25s;
+      }
+      .home-tool-card:hover::after {
+        transform: scaleX(1);
+      }
+      .home-tool-card:hover {
+        border-color: var(--blue);
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+      }
+      .home-tool-icon {
+        font-size: 2.4rem;
+        color: var(--blue);
+        margin-bottom: 0.8rem;
+        transition: transform 0.3s;
+      }
+      .home-tool-card:hover .home-tool-icon {
+        transform: scale(1.1);
+      }
+      .home-tool-name {
+        font-weight: 800;
+        font-size: 0.95rem;
+        color: var(--navy);
+        margin-bottom: 0.4rem;
+      }
+      .home-tool-desc {
+        font-size: 0.75rem;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.2rem;
+        margin-top: 1rem;
+      }
+      .stat-badge {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.25s;
+      }
+      .stat-badge:hover {
+        border-color: var(--blue-mid);
+        box-shadow: var(--shadow);
+      }
+      .stat-icon {
+        font-size: 2rem;
+        color: var(--blue);
+      }
+      .stat-info h4 {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: var(--navy);
+      }
+      .stat-info p {
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
+      .error-box {
+        background: #fff5f5;
+        border: 1.5px solid #fecaca;
+        border-radius: 12px;
+        padding: 0.8rem 1rem;
+        color: var(--red);
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-top: 0.8rem;
+        display: none;
+      }
+      .error-box.show {
+        display: block;
+      }
+
+      /* truth table */
+      .tt-scroll {
+        overflow-x: auto;
+        margin-top: 1rem;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85rem;
+      }
+      th {
+        background: var(--navy);
+        color: #fff;
+        padding: 0.75rem 0.9rem;
+        text-align: center;
+        font-weight: 600;
+        font-size: 0.8rem;
+      }
+      th:first-child {
+        border-radius: 14px 0 0 0;
+      }
+      th:last-child {
+        border-radius: 0 14px 0 0;
+      }
+      td {
+        padding: 0.6rem 0.9rem;
+        text-align: center;
+        border-bottom: 1px solid var(--border);
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      .tt-true {
+        color: var(--green);
+        font-weight: 700;
+        background: var(--green-bg);
+      }
+      .tt-false {
+        color: var(--red);
+        font-weight: 700;
+        background: var(--red-bg);
+      }
+      .tt-result-col {
+        font-weight: 800;
+        font-size: 0.9rem;
+      }
+
+      /* Sets layout */
+      .sets-input-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .sets-input-grid label {
+        font-weight: 700;
+        font-size: 0.8rem;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 0.4rem;
+      }
+      .set-result-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.8rem;
+        margin-top: 1rem;
+      }
+      .set-result-item {
+        background: var(--blue-light);
+        border: 1.5px solid var(--blue-mid);
+        border-radius: 14px;
+        padding: 1rem;
+      }
+      .venn-wrap {
+        display: flex;
+        justify-content: center;
+        margin-top: 1.5rem;
+      }
+
+      @media (max-width: 768px) {
+        .tab-btn span {
+          display: none;
+        }
+        .tab-btn {
+          padding: 0.5rem 0.7rem;
+        }
+        .card {
+          padding: 1.4rem;
+        }
+        .sets-input-grid {
+          grid-template-columns: 1fr;
+        }
+        .set-result-grid {
+          grid-template-columns: 1fr;
+        }
+        .header-inner {
+          flex-direction: column;
+          height: auto;
+          padding: 0.8rem 0;
+          gap: 0.6rem;
+        }
+        .tab-nav {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .tab-nav {
+          gap: 2px;
+          padding: 3px;
+        }
+        .tab-btn {
+          padding: 0.4rem 0.5rem;
+          font-size: 0.7rem;
+          border-radius: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-inner">
+        <div class="logo">
+          <i class="fas fa-calculator"></i><span>DiscreteMath</span
+          ><sub>Pro</sub>
+        </div>
+        <nav class="tab-nav">
+          <button class="tab-btn active" onclick="switchTab('home')">
+            <i class="fas fa-home"></i><span>Home</span>
+          </button>
+          <button class="tab-btn" onclick="switchTab('prime')">
+            <i class="fas fa-hashtag"></i><span>Prime</span>
+          </button>
+          <button class="tab-btn" onclick="switchTab('gcdlcm')">
+            <i class="fas fa-divide"></i><span>GCD/LCM</span>
+          </button>
+          <button class="tab-btn" onclick="switchTab('combinatorics')">
+            <i class="fas fa-sort-amount-up"></i><span>nCr/nPr</span>
+          </button>
+          <button class="tab-btn" onclick="switchTab('modular')">
+            <i class="fas fa-clock"></i><span>Modular</span>
+          </button>
+          <button class="tab-btn" onclick="switchTab('truth')">
+            <i class="fas fa-table"></i><span>Truth</span>
+          </button>
+          <button class="tab-btn" onclick="switchTab('sets')">
+            <i class="fas fa-venn"></i><span>Sets</span>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="hero-intro">
+        <h1>Discrete Math <em>Pro Solver</em></h1>
+        <p>
+          <i class="fas fa-rocket" style="color: var(--purple)"></i>
+          Click any example to explore • Combinatorics • Number Theory • Logic •
+          Sets
+        </p>
+      </div>
+
+      <!-- HOME PANEL -->
+      <div class="tool-panel active" id="panel-home">
+        <div class="feature-grid">
+          <div class="stat-badge">
+            <div class="stat-icon"><i class="fas fa-calculator"></i></div>
+            <div class="stat-info">
+              <h4>7 Tools</h4>
+              <p>Comprehensive coverage</p>
+            </div>
+          </div>
+          <div class="stat-badge">
+            <div class="stat-icon"><i class="fas fa-list-ol"></i></div>
+            <div class="stat-info">
+              <h4>Step-by-step</h4>
+              <p>Detailed walkthroughs</p>
+            </div>
+          </div>
+          <div class="stat-badge">
+            <div class="stat-icon"><i class="fas fa-lightbulb"></i></div>
+            <div class="stat-info">
+              <h4>Examples</h4>
+              <p>Click & learn instantly</p>
+            </div>
+          </div>
+          <div class="stat-badge">
+            <div class="stat-icon"><i class="fas fa-chart-pie"></i></div>
+            <div class="stat-info">
+              <h4>Visual</h4>
+              <p>Venn & tables</p>
+            </div>
+          </div>
+        </div>
+        <div class="home-grid" style="margin-top: 1.8rem">
+          <div class="home-tool-card" onclick="switchTab('prime')">
+            <div class="home-tool-icon"><i class="fas fa-hashtag"></i></div>
+            <div class="home-tool-name">Prime Factors</div>
+            <div class="home-tool-desc">Trial division with steps</div>
+          </div>
+          <div class="home-tool-card" onclick="switchTab('gcdlcm')">
+            <div class="home-tool-icon"><i class="fas fa-divide"></i></div>
+            <div class="home-tool-name">GCD & LCM</div>
+            <div class="home-tool-desc">Euclidean algorithm</div>
+          </div>
+          <div class="home-tool-card" onclick="switchTab('combinatorics')">
+            <div class="home-tool-icon">
+              <i class="fas fa-sort-amount-up"></i>
+            </div>
+            <div class="home-tool-name">nCr & nPr</div>
+            <div class="home-tool-desc">Permutations & combinations</div>
+          </div>
+          <div class="home-tool-card" onclick="switchTab('modular')">
+            <div class="home-tool-icon"><i class="fas fa-clock"></i></div>
+            <div class="home-tool-name">Modular Arithmetic</div>
+            <div class="home-tool-desc">Congruence & inverses</div>
+          </div>
+          <div class="home-tool-card" onclick="switchTab('truth')">
+            <div class="home-tool-icon"><i class="fas fa-table"></i></div>
+            <div class="home-tool-name">Truth Tables</div>
+            <div class="home-tool-desc">P, Q, R logic</div>
+          </div>
+          <div class="home-tool-card" onclick="switchTab('sets')">
+            <div class="home-tool-icon"><i class="fas fa-venn"></i></div>
+            <div class="home-tool-name">Set Operations</div>
+            <div class="home-tool-desc">Venn diagram included</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRIME PANEL -->
+      <div class="tool-panel" id="panel-prime">
+        <div class="card">
+          <div class="card-title">
+            <div class="card-icon"><i class="fas fa-hashtag"></i></div>
+            Prime Factorization
+          </div>
+          <p class="card-desc">
+            Decompose any integer into prime factors with trial division steps.
+          </p>
+          <div class="example-label">
+            <i class="fas fa-mouse-pointer"></i> Click an example to try:
+          </div>
+          <div class="examples-row">
+            <span class="example-chip" onclick="setPrimeExample(360)"
+              ><i class="fas fa-play-circle"></i> 360</span
+            >
+            <span class="example-chip" onclick="setPrimeExample(840)"
+              ><i class="fas fa-play-circle"></i> 840</span
+            >
+            <span class="example-chip" onclick="setPrimeExample(2024)"
+              ><i class="fas fa-play-circle"></i> 2024</span
+            >
+            <span class="example-chip" onclick="setPrimeExample(9999)"
+              ><i class="fas fa-play-circle"></i> 9999</span
+            >
+            <span class="example-chip" onclick="setPrimeExample(65536)"
+              ><i class="fas fa-play-circle"></i> 65536</span
+            >
+          </div>
+          <div class="input-row">
+            <input
+              type="number"
+              id="prime-input"
+              placeholder="e.g. 360"
+              min="2"
+            />
+            <button class="btn-solve" onclick="solvePrime()">
+              <i class="fas fa-calculator"></i> Factorize
+            </button>
+          </div>
+          <div class="error-box" id="prime-error"></div>
+          <div class="result-box" id="prime-result">
+            <div class="result-label">Result</div>
+            <div class="result-value" id="prime-answer"></div>
+            <div class="result-sub" id="prime-exp"></div>
+            <ul class="steps-list" id="prime-steps"></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- GCD/LCM PANEL -->
+      <div class="tool-panel" id="panel-gcdlcm">
+        <div class="card">
+          <div class="card-title">
+            <div class="card-icon"><i class="fas fa-divide"></i></div>
+            GCD & LCM Calculator
+          </div>
+          <p class="card-desc">
+            Compute GCD using Euclidean algorithm and LCM via |a·b|/GCD formula.
+          </p>
+          <div class="example-label">
+            <i class="fas fa-mouse-pointer"></i> Click an example to try:
+          </div>
+          <div class="examples-row">
+            <span class="example-chip" onclick="setGCDLCMExample(48, 18)"
+              ><i class="fas fa-play-circle"></i> (48, 18)</span
+            >
+            <span class="example-chip" onclick="setGCDLCMExample(120, 84)"
+              ><i class="fas fa-play-circle"></i> (120, 84)</span
+            >
+            <span class="example-chip" onclick="setGCDLCMExample(270, 192)"
+              ><i class="fas fa-play-circle"></i> (270, 192)</span
+            >
+            <span class="example-chip" onclick="setGCDLCMExample(1071, 462)"
+              ><i class="fas fa-play-circle"></i> (1071, 462)</span
+            >
+            <span class="example-chip" onclick="setGCDLCMExample(100, 75)"
+              ><i class="fas fa-play-circle"></i> (100, 75)</span
+            >
+          </div>
+          <div class="input-row">
+            <input type="number" id="gcd-a" placeholder="a" min="1" />
+            <input type="number" id="gcd-b" placeholder="b" min="1" />
+            <button class="btn-solve" onclick="solveGCDLCM()">
+              <i class="fas fa-play"></i> Compute Both
+            </button>
+          </div>
+          <div class="error-box" id="gcdlcm-error"></div>
+          <div class="result-box" id="gcd-result">
+            <div class="result-label">GCD</div>
+            <div class="result-value" id="gcd-answer"></div>
+            <ul class="steps-list" id="gcd-steps"></ul>
+          </div>
+          <div class="result-box" id="lcm-result">
+            <div class="result-label">LCM</div>
+            <div class="result-value" id="lcm-answer"></div>
+            <ul class="steps-list" id="lcm-steps"></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMBINATORICS PANEL -->
+      <div class="tool-panel" id="panel-combinatorics">
+        <div class="card">
+          <div class="card-title">
+            <div class="card-icon"><i class="fas fa-sort-amount-up"></i></div>
+            Permutations & Combinations
+          </div>
+          <p class="card-desc">
+            Compute nPr (permutations) and nCr (combinations) with factorial
+            steps.
+          </p>
+          <div class="example-label">
+            <i class="fas fa-mouse-pointer"></i> Click an example to try:
+          </div>
+          <div class="examples-row">
+            <span class="example-chip" onclick="setCombinatoricsExample(10, 3)"
+              ><i class="fas fa-play-circle"></i> 10P3, 10C3</span
+            >
+            <span class="example-chip" onclick="setCombinatoricsExample(52, 5)"
+              ><i class="fas fa-play-circle"></i> 52C5 (Poker)</span
+            >
+            <span class="example-chip" onclick="setCombinatoricsExample(8, 3)"
+              ><i class="fas fa-play-circle"></i> 8P3, 8C3</span
+            >
+            <span class="example-chip" onclick="setCombinatoricsExample(20, 4)"
+              ><i class="fas fa-play-circle"></i> 20C4</span
+            >
+            <span class="example-chip" onclick="setCombinatoricsExample(6, 2)"
+              ><i class="fas fa-play-circle"></i> 6P2, 6C2</span
+            >
+          </div>
+          <div class="input-row">
+            <input
+              type="number"
+              id="comb-n"
+              placeholder="n (total items)"
+              min="0"
+            />
+            <input type="number" id="comb-r" placeholder="r (choose)" min="0" />
+            <button class="btn-solve" onclick="solveCombinatorics()">
+              <i class="fas fa-calculator"></i> Calculate
+            </button>
+          </div>
+          <div class="error-box" id="comb-error"></div>
+          <div class="result-box" id="comb-result">
+            <div class="result-label">Results</div>
+            <div class="result-value" id="comb-npr"></div>
+            <div
+              class="result-value"
+              id="comb-ncr"
+              style="margin-top: 0.4rem"
+            ></div>
+            <ul class="steps-list" id="comb-steps"></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODULAR ARITHMETIC PANEL -->
+      <div class="tool-panel" id="panel-modular">
+        <div class="card">
+          <div class="card-title">
+            <div class="card-icon"><i class="fas fa-clock"></i></div>
+            Modular Arithmetic
+          </div>
+          <p class="card-desc">
+            Compute a mod m, find modular inverse (if gcd=1), with steps.
+          </p>
+          <div class="example-label">
+            <i class="fas fa-mouse-pointer"></i> Click an example to try:
+          </div>
+          <div class="examples-row">
+            <span class="example-chip" onclick="setModularExample(17, 5)"
+              ><i class="fas fa-play-circle"></i> 17 mod 5</span
+            >
+            <span class="example-chip" onclick="setModularExample(23, 7)"
+              ><i class="fas fa-play-circle"></i> 23 mod 7</span
+            >
+            <span class="example-chip" onclick="setModularExample(-10, 6)"
+              ><i class="fas fa-play-circle"></i> -10 mod 6</span
+            >
+            <span class="example-chip" onclick="setModularExample(7, 26)"
+              ><i class="fas fa-play-circle"></i> 7⁻¹ mod 26</span
+            >
+            <span class="example-chip" onclick="setModularExample(100, 13)"
+              ><i class="fas fa-play-circle"></i> 100 mod 13</span
+            >
+          </div>
+          <div class="input-row">
+            <input type="number" id="mod-a" placeholder="Number a" />
+            <input type="number" id="mod-m" placeholder="Modulus m" min="1" />
+            <button class="btn-solve" onclick="solveModular()">
+              <i class="fas fa-sync-alt"></i> Compute
+            </button>
+          </div>
+          <div class="error-box" id="mod-error"></div>
+          <div class="result-box" id="mod-result">
+            <div class="result-label">a mod m</div>
+            <div class="result-value" id="mod-remainder"></div>
+            <div class="result-label" style="margin-top: 0.8rem">
+              Modular Inverse (if exists)
+            </div>
+            <div class="result-value" id="mod-inverse"></div>
+            <ul class="steps-list" id="mod-steps"></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- TRUTH TABLE PANEL -->
+      <div class="tool-panel" id="panel-truth">
+        <div class="card">
+          <div class="card-title">
+            <div class="card-icon"><i class="fas fa-table"></i></div>
+            Truth Table Generator
+          </div>
+          <p class="card-desc">
+            Variables: P, Q, R. Operators: AND, OR, NOT, IMP (→), BIIMP (↔),
+            XOR.
+          </p>
+          <div class="example-label">
+            <i class="fas fa-mouse-pointer"></i> Click an example to try:
+          </div>
+          <div class="examples-row">
+            <span class="example-chip" onclick="setTruthExample('P AND Q')"
+              ><i class="fas fa-play-circle"></i> P AND Q</span
+            >
+            <span class="example-chip" onclick="setTruthExample('P OR Q')"
+              ><i class="fas fa-play-circle"></i> P OR Q</span
+            >
+            <span class="example-chip" onclick="setTruthExample('P IMP Q')"
+              ><i class="fas fa-play-circle"></i> P → Q</span
+            >
+            <span
+              class="example-chip"
+              onclick="setTruthExample('(P OR Q) AND NOT R')"
+              ><i class="fas fa-play-circle"></i> (P∨Q)∧¬R</span
+            >
+            <span
+              class="example-chip"
+              onclick="setTruthExample('P AND (Q OR R)')"
+              ><i class="fas fa-play-circle"></i> P∧(Q∨R)</span
+            >
+            <span class="example-chip" onclick="setTruthExample('P BIIMP Q')"
+              ><i class="fas fa-play-circle"></i> P ↔ Q</span
+            >
+          </div>
+          <div style="display: flex; gap: 0.8rem; flex-wrap: wrap">
+            <input
+              type="text"
+              id="tt-formula"
+              placeholder="e.g. P AND (Q OR NOT R)"
+              style="flex: 2"
+            />
+            <button class="btn-solve" onclick="solveTruth()">
+              <i class="fas fa-play"></i> Generate
+            </button>
+          </div>
+          <div class="error-box" id="tt-error"></div>
+          <div id="tt-result" style="display: none">
+            <div
+              class="result-label"
+              id="tt-summary"
+              style="margin-top: 1rem"
+            ></div>
+            <div class="tt-scroll"><table id="tt-table"></table></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETS PANEL -->
+      <div class="tool-panel" id="panel-sets">
+        <div class="card">
+          <div class="card-title">
+            <div class="card-icon"><i class="fas fa-venn"></i></div>
+            Set Operations
+          </div>
+          <p class="card-desc">
+            Enter comma-separated elements (numbers or words). Visual Venn
+            diagram included.
+          </p>
+          <div class="example-label">
+            <i class="fas fa-mouse-pointer"></i> Click an example to try:
+          </div>
+          <div class="examples-row">
+            <span
+              class="example-chip"
+              onclick="setSetsExample('1,2,3,4,5', '3,4,5,6,7')"
+              ><i class="fas fa-play-circle"></i> Basic Numbers</span
+            >
+            <span
+              class="example-chip"
+              onclick="setSetsExample('a,b,c,d,e', 'c,d,e,f,g')"
+              ><i class="fas fa-play-circle"></i> Letters</span
+            >
+            <span
+              class="example-chip"
+              onclick="setSetsExample('apple,banana,cherry', 'banana,date,fig')"
+              ><i class="fas fa-play-circle"></i> Fruits</span
+            >
+            <span
+              class="example-chip"
+              onclick="setSetsExample('10,20,30,40', '30,40,50,60')"
+              ><i class="fas fa-play-circle"></i> Multiples</span
+            >
+          </div>
+          <div class="sets-input-grid">
+            <div>
+              <label
+                ><i
+                  class="fas fa-circle"
+                  style="color: var(--blue); font-size: 0.6rem"
+                ></i>
+                SET A</label
+              >
+              <input type="text" id="set-a" placeholder="1,2,3,4" />
+            </div>
+            <div>
+              <label
+                ><i
+                  class="fas fa-circle"
+                  style="color: var(--gold); font-size: 0.6rem"
+                ></i>
+                SET B</label
+              >
+              <input type="text" id="set-b" placeholder="3,4,5,6" />
+            </div>
+          </div>
+          <button
+            class="btn-solve"
+            style="margin-top: 1rem"
+            onclick="solveSets()"
+          >
+            <i class="fas fa-sync-alt"></i> Compute All Operations
+          </button>
+          <div class="error-box" id="set-error"></div>
+          <div id="set-result" style="display: none">
+            <div class="set-result-grid">
+              <div class="set-result-item">
+                <div class="result-label">A ∪ B (Union)</div>
+                <div class="result-value" id="set-union"></div>
+              </div>
+              <div class="set-result-item">
+                <div class="result-label">A ∩ B (Intersection)</div>
+                <div class="result-value" id="set-inter"></div>
+              </div>
+              <div class="set-result-item">
+                <div class="result-label">A − B (Difference)</div>
+                <div class="result-value" id="set-diff-ab"></div>
+              </div>
+              <div class="set-result-item">
+                <div class="result-label">B − A (Difference)</div>
+                <div class="result-value" id="set-diff-ba"></div>
+              </div>
+              <div class="set-result-item" style="grid-column: 1 / -1">
+                <div class="result-label">A △ B (Symmetric Difference)</div>
+                <div class="result-value" id="set-sym"></div>
+              </div>
+            </div>
+            <div class="venn-wrap">
+              <svg
+                id="venn-svg"
+                width="400"
+                height="220"
+                viewBox="0 0 400 220"
+              ></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      (function () {
+        // ── TAB SWITCHING ──
+        window.switchTab = function (id) {
+          document
+            .querySelectorAll(".tool-panel")
+            .forEach((p) => p.classList.remove("active"));
+          document
+            .querySelectorAll(".tab-btn")
+            .forEach((b) => b.classList.remove("active"));
+          const panel = document.getElementById("panel-" + id);
+          if (panel) panel.classList.add("active");
+          const map = {
+            home: 0,
+            prime: 1,
+            gcdlcm: 2,
+            combinatorics: 3,
+            modular: 4,
+            truth: 5,
+            sets: 6,
+          };
+          const btns = document.querySelectorAll(".tab-btn");
+          if (btns[map[id]]) btns[map[id]].classList.add("active");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+
+        function showError(id, msg) {
+          const e = document.getElementById(id);
+          if (!e) return;
+          e.textContent = "⚠ " + msg;
+          e.classList.add("show");
+          setTimeout(() => e.classList.remove("show"), 3500);
+        }
+        function hideError(id) {
+          const el = document.getElementById(id);
+          if (el) el.classList.remove("show");
+        }
+
+        function factorial(n) {
+          if (n === 0 || n === 1) return 1;
+          let r = 1;
+          for (let i = 2; i <= n; i++) r *= i;
+          return r;
+        }
+
+        // ── PRIME ──
+        window.setPrimeExample = function (val) {
+          document.getElementById("prime-input").value = val;
+          switchTab("prime");
+          setTimeout(() => solvePrime(), 150);
+        };
+        window.solvePrime = function () {
+          const n = parseInt(document.getElementById("prime-input").value);
+          hideError("prime-error");
+          if (!n || n < 2)
+            return showError("prime-error", "Enter an integer ≥ 2.");
+          let num = n,
+            d = 2,
+            factors = [],
+            steps = [];
+          while (d * d <= num) {
+            while (num % d === 0) {
+              factors.push(d);
+              steps.push({ d, q: num / d, c: num });
+              num = Math.floor(num / d);
+            }
+            d++;
+          }
+          if (num > 1) {
+            factors.push(num);
+            steps.push({ d: num, q: 1, c: num });
+          }
+          const cnt = {};
+          factors.forEach((f) => (cnt[f] = (cnt[f] || 0) + 1));
+          const exp = Object.entries(cnt)
+            .map(([b, e]) => (e > 1 ? `${b}^${e}` : b))
+            .join(" × ");
+          document.getElementById("prime-answer").textContent =
+            n + " = " + factors.join(" × ");
+          document.getElementById("prime-exp").textContent =
+            "Exponential form: " + exp;
+          document.getElementById("prime-steps").innerHTML = steps
+            .map(
+              (s, i) =>
+                `<li><div class="step-num">${i + 1}</div><span>${s.c} ÷ ${s.d} = ${s.q}</span> — divide by prime ${s.d}</li>`,
+            )
+            .join("");
+          document.getElementById("prime-result").classList.add("show");
+        };
+
+        // ── GCD / LCM ──
+        function gcd(a, b) {
+          let x = Math.abs(a),
+            y = Math.abs(b),
+            steps = [];
+          while (y !== 0) {
+            let r = x % y;
+            steps.push({ a: x, b: y, q: Math.floor(x / y), r });
+            x = y;
+            y = r;
+          }
+          return { g: x, steps };
+        }
+        window.setGCDLCMExample = function (a, b) {
+          document.getElementById("gcd-a").value = a;
+          document.getElementById("gcd-b").value = b;
+          switchTab("gcdlcm");
+          setTimeout(() => solveGCDLCM(), 150);
+        };
+        window.solveGCDLCM = function () {
+          const a = parseInt(document.getElementById("gcd-a").value);
+          const b = parseInt(document.getElementById("gcd-b").value);
+          hideError("gcdlcm-error");
+          if (!a || !b || a < 1 || b < 1)
+            return showError("gcdlcm-error", "Enter two positive integers.");
+          const { g, steps } = gcd(a, b);
+          const lcm = Math.abs(a * b) / g;
+          document.getElementById("gcd-answer").textContent =
+            `GCD(${a}, ${b}) = ${g}`;
+          document.getElementById("gcd-steps").innerHTML =
+            steps
+              .map(
+                (s, i) =>
+                  `<li><div class="step-num">${i + 1}</div><span>${s.a} = ${s.b} × ${s.q} + ${s.r}</span></li>`,
+              )
+              .join("") +
+            `<li><div class="step-num">✓</div>Remainder 0 → <span>GCD = ${g}</span></li>`;
+          document.getElementById("lcm-answer").textContent =
+            `LCM(${a}, ${b}) = ${lcm}`;
+          document.getElementById("lcm-steps").innerHTML = [
+            `<li><div class="step-num">1</div>GCD(${a}, ${b}) = <span>${g}</span></li>`,
+            `<li><div class="step-num">2</div>LCM = |${a} × ${b}| ÷ ${g} = ${Math.abs(a * b)} ÷ ${g} = <span>${lcm}</span></li>`,
+          ].join("");
+          document.getElementById("gcd-result").classList.add("show");
+          document.getElementById("lcm-result").classList.add("show");
+        };
+
+        // ── COMBINATORICS ──
+        window.setCombinatoricsExample = function (n, r) {
+          document.getElementById("comb-n").value = n;
+          document.getElementById("comb-r").value = r;
+          switchTab("combinatorics");
+          setTimeout(() => solveCombinatorics(), 150);
+        };
+        window.solveCombinatorics = function () {
+          const n = parseInt(document.getElementById("comb-n").value);
+          const r = parseInt(document.getElementById("comb-r").value);
+          hideError("comb-error");
+          if (isNaN(n) || isNaN(r) || n < 0 || r < 0)
+            return showError("comb-error", "Enter non-negative integers.");
+          if (r > n) return showError("comb-error", "r cannot exceed n.");
+          const nPr = factorial(n) / factorial(n - r);
+          const nCr = factorial(n) / (factorial(r) * factorial(n - r));
+          document.getElementById("comb-npr").textContent =
+            `nPr = ${n}P${r} = ${nPr.toLocaleString()}`;
+          document.getElementById("comb-ncr").textContent =
+            `nCr = ${n}C${r} = ${nCr.toLocaleString()}`;
+          document.getElementById("comb-steps").innerHTML = [
+            `<li><div class="step-num">1</div>n! = ${n}! = <span>${factorial(n).toLocaleString()}</span></li>`,
+            `<li><div class="step-num">2</div>(n−r)! = ${n - r}! = <span>${factorial(n - r).toLocaleString()}</span></li>`,
+            `<li><div class="step-num">3</div>nPr = n!/(n−r)! = <span>${nPr.toLocaleString()}</span> (order matters)</li>`,
+            `<li><div class="step-num">4</div>r! = ${r}! = <span>${factorial(r).toLocaleString()}</span></li>`,
+            `<li><div class="step-num">5</div>nCr = n!/(r!(n−r)!) = <span>${nCr.toLocaleString()}</span> (order doesn't matter)</li>`,
+          ].join("");
+          document.getElementById("comb-result").classList.add("show");
+        };
+
+        // ── MODULAR ──
+        function modInv(a, m) {
+          a = ((a % m) + m) % m;
+          for (let x = 1; x < m; x++) {
+            if ((a * x) % m === 1) return x;
+          }
+          return null;
+        }
+        window.setModularExample = function (a, m) {
+          document.getElementById("mod-a").value = a;
+          document.getElementById("mod-m").value = m;
+          switchTab("modular");
+          setTimeout(() => solveModular(), 150);
+        };
+        window.solveModular = function () {
+          const a = parseInt(document.getElementById("mod-a").value);
+          const m = parseInt(document.getElementById("mod-m").value);
+          hideError("mod-error");
+          if (isNaN(a) || isNaN(m) || m < 1)
+            return showError(
+              "mod-error",
+              "Valid number and modulus ≥ 1 required.",
+            );
+          const rem = ((a % m) + m) % m;
+          document.getElementById("mod-remainder").textContent =
+            `${a} mod ${m} = ${rem}`;
+          const inv = modInv(a, m);
+          const g = (function (x, y) {
+            while (y) {
+              [x, y] = [y, x % y];
+            }
+            return x;
+          })(Math.abs(a), m);
+          document.getElementById("mod-inverse").textContent =
+            inv !== null
+              ? `Inverse of ${a} modulo ${m} = ${inv} (since ${a} × ${inv} ≡ 1 mod ${m})`
+              : `No modular inverse exists (gcd(${a}, ${m}) = ${g} ≠ 1)`;
+          document.getElementById("mod-steps").innerHTML = [
+            `<li><div class="step-num">1</div>${a} = ${Math.floor(a / m)} × ${m} + <span>${rem}</span></li>`,
+            `<li><div class="step-num">2</div>Therefore, ${a} ≡ <span>${rem}</span> (mod ${m})</li>`,
+            inv !== null
+              ? `<li><div class="step-num">3</div>gcd(${a}, ${m}) = 1, so inverse exists: <span>${inv}</span></li>`
+              : `<li><div class="step-num">3</div>gcd(${a}, ${m}) = ${g} ≠ 1, so no inverse</li>`,
+          ].join("");
+          document.getElementById("mod-result").classList.add("show");
+        };
+
+        // ── TRUTH TABLE ──
+        window.setTruthExample = function (formula) {
+          document.getElementById("tt-formula").value = formula;
+          switchTab("truth");
+          setTimeout(() => solveTruth(), 150);
+        };
+        window.solveTruth = function () {
+          const raw = document.getElementById("tt-formula").value.trim();
+          hideError("tt-error");
+          if (!raw) return showError("tt-error", "Enter a logical formula.");
+          const vars = [
+            ...new Set(raw.toUpperCase().match(/\b[PQR]\b/g) || []),
+          ].sort();
+          if (vars.length === 0 || vars.length > 3)
+            return showError("tt-error", "Use variables P, Q, R (max 3).");
+          const rows = Math.pow(2, vars.length),
+            data = [];
+          try {
+            for (let i = 0; i < rows; i++) {
+              const vals = {};
+              vars.forEach(
+                (v, idx) =>
+                  (vals[v] = Boolean((i >> (vars.length - 1 - idx)) & 1)),
+              );
+              data.push({ vals, res: evalFormula(raw, vals) });
+            }
+          } catch (e) {
+            return showError(
+              "tt-error",
+              "Parse error. Check operators: AND, OR, NOT, IMP, BIIMP, XOR",
+            );
+          }
+          const allTrue = data.every((r) => r.res);
+          const allFalse = data.every((r) => !r.res);
+          document.getElementById("tt-summary").textContent = allTrue
+            ? "✅ Tautology (always TRUE)"
+            : allFalse
+              ? "❌ Contradiction (always FALSE)"
+              : "↔ Contingency (sometimes TRUE, sometimes FALSE)";
+          const displayFormula = raw
+            .toUpperCase()
+            .replace(/\bIMP\b/g, "→")
+            .replace(/\bBIIMP\b/g, "↔")
+            .replace(/\bAND\b/g, "∧")
+            .replace(/\bOR\b/g, "∨")
+            .replace(/\bNOT\b/g, "¬")
+            .replace(/\bXOR\b/g, "⊕");
+          document.getElementById("tt-table").innerHTML =
+            `<thead><tr>${[...vars, displayFormula].map((h, i) => `<th${i === vars.length ? ' style="background:#3b6df0"' : ""}>${h}</th>`).join("")}</tr></thead>` +
+            `<tbody>${data
+              .map(
+                (row) =>
+                  `<tr>${vars
+                    .map(
+                      (v) =>
+                        `<td class="${row.vals[v] ? "tt-true" : "tt-false"}">${row.vals[v] ? "T" : "F"}</td>`,
+                    )
+                    .join(
+                      "",
+                    )}<td class="tt-result-col ${row.res ? "tt-true" : "tt-false"}">${row.res ? "T" : "F"}</td></tr>`,
+              )
+              .join("")}</tbody>`;
+          document.getElementById("tt-result").style.display = "block";
+        };
+        function evalFormula(f, vals) {
+          let e = f.toUpperCase();
+          Object.entries(vals).forEach(([v, val]) => {
+            e = e.replace(
+              new RegExp("\\b" + v + "\\b", "g"),
+              val ? "true" : "false",
+            );
+          });
+          e = e
+            .replace(/\bNOT\b/g, "!")
+            .replace(/\bAND\b/g, "&&")
+            .replace(/\bOR\b/g, "||")
+            .replace(/\bXOR\b/g, "^XOR^")
+            .replace(/\bIMP\b/g, "^IMP^")
+            .replace(/\bBIIMP\b/g, "^BIIMP^");
+          return evalLogic(e);
+        }
+        function evalLogic(e) {
+          if (e.includes("^IMP^")) {
+            let i = e.lastIndexOf("^IMP^");
+            return (
+              !evalLogic(e.substring(0, i)) || evalLogic(e.substring(i + 5))
+            );
+          }
+          if (e.includes("^BIIMP^")) {
+            let i = e.lastIndexOf("^BIIMP^");
+            return (
+              evalLogic(e.substring(0, i)) === evalLogic(e.substring(i + 7))
+            );
+          }
+          if (e.includes("^XOR^")) {
+            let i = e.lastIndexOf("^XOR^");
+            let l = evalLogic(e.substring(0, i)),
+              r = evalLogic(e.substring(i + 5));
+            return (l || r) && !(l && r);
+          }
+          return Function('"use strict";return(' + e + ")")();
+        }
+
+        // ── SETS ──
+        window.setSetsExample = function (a, b) {
+          document.getElementById("set-a").value = a;
+          document.getElementById("set-b").value = b;
+          switchTab("sets");
+          setTimeout(() => solveSets(), 150);
+        };
+        window.solveSets = function () {
+          const rawA = document.getElementById("set-a").value;
+          const rawB = document.getElementById("set-b").value;
+          hideError("set-error");
+          if (!rawA.trim() && !rawB.trim())
+            return showError("set-error", "Enter at least one set.");
+          const A = [
+            ...new Set(
+              rawA
+                .split(",")
+                .map((s) => s.trim())
+                .filter((s) => s !== ""),
+            ),
+          ];
+          const B = [
+            ...new Set(
+              rawB
+                .split(",")
+                .map((s) => s.trim())
+                .filter((s) => s !== ""),
+            ),
+          ];
+          const union = [...new Set([...A, ...B])];
+          const inter = A.filter((x) => B.includes(x));
+          const diffAB = A.filter((x) => !B.includes(x));
+          const diffBA = B.filter((x) => !A.includes(x));
+          const sym = [...diffAB, ...diffBA];
+          const fmt = (arr) =>
+            arr.length === 0 ? "∅ (empty set)" : "{ " + arr.join(", ") + " }";
+          document.getElementById("set-union").textContent = fmt(union);
+          document.getElementById("set-inter").textContent = fmt(inter);
+          document.getElementById("set-diff-ab").textContent = fmt(diffAB);
+          document.getElementById("set-diff-ba").textContent = fmt(diffBA);
+          document.getElementById("set-sym").textContent = fmt(sym);
+          drawVenn(A, B, inter, diffAB, diffBA);
+          document.getElementById("set-result").style.display = "block";
+        };
+        function drawVenn(A, B, inter, onlyA, onlyB) {
+          const svg = document.getElementById("venn-svg");
+          const hasInter = inter.length > 0;
+          const aColor = "#dbeafe";
+          const bColor = "#fef9c3";
+          const interColor = "#d1fae5";
+          const onlyAText =
+            onlyA.slice(0, 6).join(", ") + (onlyA.length > 6 ? "…" : "");
+          const onlyBText =
+            onlyB.slice(0, 6).join(", ") + (onlyB.length > 6 ? "…" : "");
+          const interText =
+            inter.slice(0, 4).join(", ") + (inter.length > 4 ? "…" : "");
+          svg.innerHTML = `
+            <defs>
+              <clipPath id="clipA"><circle cx="155" cy="110" r="85"/></clipPath>
+            </defs>
+            <rect x="5" y="5" width="390" height="210" rx="16" fill="#f8faff" stroke="#e2e8f0" stroke-width="1.5"/>
+            <circle cx="155" cy="110" r="85" fill="${aColor}" stroke="#3b82f6" stroke-width="2.5" opacity="0.85"/>
+            <circle cx="245" cy="110" r="85" fill="${bColor}" stroke="#eab308" stroke-width="2.5" opacity="0.85"/>
+            ${hasInter ? `<circle cx="245" cy="110" r="85" fill="${interColor}" clip-path="url(#clipA)" opacity="0.9"/>` : ""}
+            <text x="100" y="42" text-anchor="middle" font-size="15" font-weight="800" fill="#1e40af">A</text>
+            <text x="300" y="42" text-anchor="middle" font-size="15" font-weight="800" fill="#92400e">B</text>
+            <text x="108" y="106" text-anchor="middle" font-size="11" fill="#1e3a8a" font-weight="600">${onlyAText || "—"}</text>
+            <text x="292" y="106" text-anchor="middle" font-size="11" fill="#78350f" font-weight="600">${onlyBText || "—"}</text>
+            ${hasInter ? `<text x="200" y="106" text-anchor="middle" font-size="10" fill="#065f46" font-weight="700">${interText}</text>` : ""}
+            <text x="108" y="128" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="700">Only A</text>
+            <text x="292" y="128" text-anchor="middle" font-size="9" fill="#eab308" font-weight="700">Only B</text>
+            ${hasInter ? `<text x="200" y="125" text-anchor="middle" font-size="9" fill="#10b981" font-weight="700">A∩B</text>` : ""}
+            <text x="200" y="195" text-anchor="middle" font-size="10" fill="#64748b">Venn Diagram</text>
+          `;
+        }
+
+        // Enter key support
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            const id = document.querySelector(".tool-panel.active")?.id;
+            if (id === "panel-prime") solvePrime();
+            if (id === "panel-gcdlcm") solveGCDLCM();
+            if (id === "panel-combinatorics") solveCombinatorics();
+            if (id === "panel-modular") solveModular();
+            if (id === "panel-truth") solveTruth();
+            if (id === "panel-sets") solveSets();
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>
