@@ -678,9 +678,7 @@
           <button class="tab-btn" onclick="switchTab('gcdlcm')">
             <i class="fas fa-divide"></i><span>GCD/LCM</span>
           </button>
-          <button class="tab-btn" onclick="switchTab('combinatorics')">
-            <i class="fas fa-sort-amount-up"></i><span>nCr/nPr</span>
-          </button>
+
           <button class="tab-btn" onclick="switchTab('modular')">
             <i class="fas fa-clock"></i><span>Modular</span>
           </button>
@@ -699,8 +697,7 @@
         <h1>Discrete Math <em>Pro Solver</em></h1>
         <p>
           <i class="fas fa-rocket" style="color: var(--purple)"></i>
-          Click any example to explore • Combinatorics • Number Theory • Logic •
-          Sets
+          Click any example to explore • Number Theory • Logic • Sets
         </p>
       </div>
 
@@ -710,7 +707,7 @@
           <div class="stat-badge">
             <div class="stat-icon"><i class="fas fa-calculator"></i></div>
             <div class="stat-info">
-              <h4>7 Tools</h4>
+              <h4>6 Tools</h4>
               <p>Comprehensive coverage</p>
             </div>
           </div>
@@ -747,13 +744,7 @@
             <div class="home-tool-name">GCD & LCM</div>
             <div class="home-tool-desc">Euclidean algorithm</div>
           </div>
-          <div class="home-tool-card" onclick="switchTab('combinatorics')">
-            <div class="home-tool-icon">
-              <i class="fas fa-sort-amount-up"></i>
-            </div>
-            <div class="home-tool-name">nCr & nPr</div>
-            <div class="home-tool-desc">Permutations & combinations</div>
-          </div>
+
           <div class="home-tool-card" onclick="switchTab('modular')">
             <div class="home-tool-icon"><i class="fas fa-clock"></i></div>
             <div class="home-tool-name">Modular Arithmetic</div>
@@ -765,7 +756,7 @@
             <div class="home-tool-desc">P, Q, R logic</div>
           </div>
           <div class="home-tool-card" onclick="switchTab('sets')">
-            <div class="home-tool-icon"><i class="fas fa-venn"></i></div>
+            <div class="home-tool-icon"><i class="fa-solid fa-circle"></i></div>
             <div class="home-tool-name">Set Operations</div>
             <div class="home-tool-desc">Venn diagram included</div>
           </div>
@@ -870,63 +861,6 @@
             <div class="result-label">LCM</div>
             <div class="result-value" id="lcm-answer"></div>
             <ul class="steps-list" id="lcm-steps"></ul>
-          </div>
-        </div>
-      </div>
-
-      <!-- COMBINATORICS PANEL -->
-      <div class="tool-panel" id="panel-combinatorics">
-        <div class="card">
-          <div class="card-title">
-            <div class="card-icon"><i class="fas fa-sort-amount-up"></i></div>
-            Permutations & Combinations
-          </div>
-          <p class="card-desc">
-            Compute nPr (permutations) and nCr (combinations) with factorial
-            steps.
-          </p>
-          <div class="example-label">
-            <i class="fas fa-mouse-pointer"></i> Click an example to try:
-          </div>
-          <div class="examples-row">
-            <span class="example-chip" onclick="setCombinatoricsExample(10, 3)"
-              ><i class="fas fa-play-circle"></i> 10P3, 10C3</span
-            >
-            <span class="example-chip" onclick="setCombinatoricsExample(52, 5)"
-              ><i class="fas fa-play-circle"></i> 52C5 (Poker)</span
-            >
-            <span class="example-chip" onclick="setCombinatoricsExample(8, 3)"
-              ><i class="fas fa-play-circle"></i> 8P3, 8C3</span
-            >
-            <span class="example-chip" onclick="setCombinatoricsExample(20, 4)"
-              ><i class="fas fa-play-circle"></i> 20C4</span
-            >
-            <span class="example-chip" onclick="setCombinatoricsExample(6, 2)"
-              ><i class="fas fa-play-circle"></i> 6P2, 6C2</span
-            >
-          </div>
-          <div class="input-row">
-            <input
-              type="number"
-              id="comb-n"
-              placeholder="n (total items)"
-              min="0"
-            />
-            <input type="number" id="comb-r" placeholder="r (choose)" min="0" />
-            <button class="btn-solve" onclick="solveCombinatorics()">
-              <i class="fas fa-calculator"></i> Calculate
-            </button>
-          </div>
-          <div class="error-box" id="comb-error"></div>
-          <div class="result-box" id="comb-result">
-            <div class="result-label">Results</div>
-            <div class="result-value" id="comb-npr"></div>
-            <div
-              class="result-value"
-              id="comb-ncr"
-              style="margin-top: 0.4rem"
-            ></div>
-            <ul class="steps-list" id="comb-steps"></ul>
           </div>
         </div>
       </div>
@@ -1046,8 +980,30 @@
       <div class="tool-panel" id="panel-sets">
         <div class="card">
           <div class="card-title">
-            <div class="card-icon"><i class="fas fa-venn"></i></div>
-            Set Operations
+            <i
+              class="fas fa-venn"
+              style="
+                font-size: 1.8rem;
+                color: var(--teal);
+                margin-right: 0.7rem;
+              "
+            ></i>
+            <div style="flex: 1">
+              <div
+                style="font-weight: 800; font-size: 1.2rem; color: var(--navy)"
+              >
+                Set Operations
+              </div>
+              <div
+                style="
+                  font-size: 0.88rem;
+                  color: var(--muted);
+                  margin-top: 0.2rem;
+                "
+              >
+                Union, Intersection, Difference, Venn visualization
+              </div>
+            </div>
           </div>
           <p class="card-desc">
             Enter comma-separated elements (numbers or words). Visual Venn
@@ -1160,10 +1116,9 @@
             home: 0,
             prime: 1,
             gcdlcm: 2,
-            combinatorics: 3,
-            modular: 4,
-            truth: 5,
-            sets: 6,
+            modular: 3,
+            truth: 4,
+            sets: 5,
           };
           const btns = document.querySelectorAll(".tab-btn");
           if (btns[map[id]]) btns[map[id]].classList.add("active");
@@ -1180,13 +1135,6 @@
         function hideError(id) {
           const el = document.getElementById(id);
           if (el) el.classList.remove("show");
-        }
-
-        function factorial(n) {
-          if (n === 0 || n === 1) return 1;
-          let r = 1;
-          for (let i = 2; i <= n; i++) r *= i;
-          return r;
         }
 
         // ── PRIME ──
@@ -1279,36 +1227,6 @@
           ].join("");
           document.getElementById("gcd-result").classList.add("show");
           document.getElementById("lcm-result").classList.add("show");
-        };
-
-        // ── COMBINATORICS ──
-        window.setCombinatoricsExample = function (n, r) {
-          document.getElementById("comb-n").value = n;
-          document.getElementById("comb-r").value = r;
-          switchTab("combinatorics");
-          setTimeout(() => solveCombinatorics(), 150);
-        };
-        window.solveCombinatorics = function () {
-          const n = parseInt(document.getElementById("comb-n").value);
-          const r = parseInt(document.getElementById("comb-r").value);
-          hideError("comb-error");
-          if (isNaN(n) || isNaN(r) || n < 0 || r < 0)
-            return showError("comb-error", "Enter non-negative integers.");
-          if (r > n) return showError("comb-error", "r cannot exceed n.");
-          const nPr = factorial(n) / factorial(n - r);
-          const nCr = factorial(n) / (factorial(r) * factorial(n - r));
-          document.getElementById("comb-npr").textContent =
-            `nPr = ${n}P${r} = ${nPr.toLocaleString()}`;
-          document.getElementById("comb-ncr").textContent =
-            `nCr = ${n}C${r} = ${nCr.toLocaleString()}`;
-          document.getElementById("comb-steps").innerHTML = [
-            `<li><div class="step-num">1</div>n! = ${n}! = <span>${factorial(n).toLocaleString()}</span></li>`,
-            `<li><div class="step-num">2</div>(n−r)! = ${n - r}! = <span>${factorial(n - r).toLocaleString()}</span></li>`,
-            `<li><div class="step-num">3</div>nPr = n!/(n−r)! = <span>${nPr.toLocaleString()}</span> (order matters)</li>`,
-            `<li><div class="step-num">4</div>r! = ${r}! = <span>${factorial(r).toLocaleString()}</span></li>`,
-            `<li><div class="step-num">5</div>nCr = n!/(r!(n−r)!) = <span>${nCr.toLocaleString()}</span> (order doesn't matter)</li>`,
-          ].join("");
-          document.getElementById("comb-result").classList.add("show");
         };
 
         // ── MODULAR ──
@@ -1543,7 +1461,6 @@
             const id = document.querySelector(".tool-panel.active")?.id;
             if (id === "panel-prime") solvePrime();
             if (id === "panel-gcdlcm") solveGCDLCM();
-            if (id === "panel-combinatorics") solveCombinatorics();
             if (id === "panel-modular") solveModular();
             if (id === "panel-truth") solveTruth();
             if (id === "panel-sets") solveSets();
