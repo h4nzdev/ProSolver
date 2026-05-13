@@ -62,7 +62,6 @@
         min-height: 100vh;
       }
 
-      /* Glass header */
       header {
         background: rgba(255, 255, 255, 0.8);
         backdrop-filter: blur(20px);
@@ -313,7 +312,6 @@
         box-shadow: 0 8px 20px rgba(59, 109, 240, 0.35);
       }
 
-      /* Example chips */
       .examples-row {
         display: flex;
         gap: 0.5rem;
@@ -539,7 +537,6 @@
         display: block;
       }
 
-      /* truth table */
       .tt-scroll {
         overflow-x: auto;
         margin-top: 1rem;
@@ -589,7 +586,6 @@
         font-size: 0.9rem;
       }
 
-      /* Sets layout */
       .sets-input-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -678,10 +674,6 @@
           <button class="tab-btn" onclick="switchTab('gcdlcm')">
             <i class="fas fa-divide"></i><span>GCD/LCM</span>
           </button>
-
-          <button class="tab-btn" onclick="switchTab('modular')">
-            <i class="fas fa-clock"></i><span>Modular</span>
-          </button>
           <button class="tab-btn" onclick="switchTab('truth')">
             <i class="fas fa-table"></i><span>Truth</span>
           </button>
@@ -707,7 +699,7 @@
           <div class="stat-badge">
             <div class="stat-icon"><i class="fas fa-calculator"></i></div>
             <div class="stat-info">
-              <h4>6 Tools</h4>
+              <h4>5 Tools</h4>
               <p>Comprehensive coverage</p>
             </div>
           </div>
@@ -743,12 +735,6 @@
             <div class="home-tool-icon"><i class="fas fa-divide"></i></div>
             <div class="home-tool-name">GCD & LCM</div>
             <div class="home-tool-desc">Euclidean algorithm</div>
-          </div>
-
-          <div class="home-tool-card" onclick="switchTab('modular')">
-            <div class="home-tool-icon"><i class="fas fa-clock"></i></div>
-            <div class="home-tool-name">Modular Arithmetic</div>
-            <div class="home-tool-desc">Congruence & inverses</div>
           </div>
           <div class="home-tool-card" onclick="switchTab('truth')">
             <div class="home-tool-icon"><i class="fas fa-table"></i></div>
@@ -865,56 +851,6 @@
         </div>
       </div>
 
-      <!-- MODULAR ARITHMETIC PANEL -->
-      <div class="tool-panel" id="panel-modular">
-        <div class="card">
-          <div class="card-title">
-            <div class="card-icon"><i class="fas fa-clock"></i></div>
-            Modular Arithmetic
-          </div>
-          <p class="card-desc">
-            Compute a mod m, find modular inverse (if gcd=1), with steps.
-          </p>
-          <div class="example-label">
-            <i class="fas fa-mouse-pointer"></i> Click an example to try:
-          </div>
-          <div class="examples-row">
-            <span class="example-chip" onclick="setModularExample(17, 5)"
-              ><i class="fas fa-play-circle"></i> 17 mod 5</span
-            >
-            <span class="example-chip" onclick="setModularExample(23, 7)"
-              ><i class="fas fa-play-circle"></i> 23 mod 7</span
-            >
-            <span class="example-chip" onclick="setModularExample(-10, 6)"
-              ><i class="fas fa-play-circle"></i> -10 mod 6</span
-            >
-            <span class="example-chip" onclick="setModularExample(7, 26)"
-              ><i class="fas fa-play-circle"></i> 7⁻¹ mod 26</span
-            >
-            <span class="example-chip" onclick="setModularExample(100, 13)"
-              ><i class="fas fa-play-circle"></i> 100 mod 13</span
-            >
-          </div>
-          <div class="input-row">
-            <input type="number" id="mod-a" placeholder="Number a" />
-            <input type="number" id="mod-m" placeholder="Modulus m" min="1" />
-            <button class="btn-solve" onclick="solveModular()">
-              <i class="fas fa-sync-alt"></i> Compute
-            </button>
-          </div>
-          <div class="error-box" id="mod-error"></div>
-          <div class="result-box" id="mod-result">
-            <div class="result-label">a mod m</div>
-            <div class="result-value" id="mod-remainder"></div>
-            <div class="result-label" style="margin-top: 0.8rem">
-              Modular Inverse (if exists)
-            </div>
-            <div class="result-value" id="mod-inverse"></div>
-            <ul class="steps-list" id="mod-steps"></ul>
-          </div>
-        </div>
-      </div>
-
       <!-- TRUTH TABLE PANEL -->
       <div class="tool-panel" id="panel-truth">
         <div class="card">
@@ -953,7 +889,7 @@
               ><i class="fas fa-play-circle"></i> P ↔ Q</span
             >
           </div>
-          <div style="display: flex; gap: 0.8rem; flex-wrap: wrap">
+          <div class="input-row">
             <input
               type="text"
               id="tt-formula"
@@ -1116,9 +1052,8 @@
             home: 0,
             prime: 1,
             gcdlcm: 2,
-            modular: 3,
-            truth: 4,
-            sets: 5,
+            truth: 3,
+            sets: 4,
           };
           const btns = document.querySelectorAll(".tab-btn");
           if (btns[map[id]]) btns[map[id]].classList.add("active");
@@ -1227,53 +1162,6 @@
           ].join("");
           document.getElementById("gcd-result").classList.add("show");
           document.getElementById("lcm-result").classList.add("show");
-        };
-
-        // ── MODULAR ──
-        function modInv(a, m) {
-          a = ((a % m) + m) % m;
-          for (let x = 1; x < m; x++) {
-            if ((a * x) % m === 1) return x;
-          }
-          return null;
-        }
-        window.setModularExample = function (a, m) {
-          document.getElementById("mod-a").value = a;
-          document.getElementById("mod-m").value = m;
-          switchTab("modular");
-          setTimeout(() => solveModular(), 150);
-        };
-        window.solveModular = function () {
-          const a = parseInt(document.getElementById("mod-a").value);
-          const m = parseInt(document.getElementById("mod-m").value);
-          hideError("mod-error");
-          if (isNaN(a) || isNaN(m) || m < 1)
-            return showError(
-              "mod-error",
-              "Valid number and modulus ≥ 1 required.",
-            );
-          const rem = ((a % m) + m) % m;
-          document.getElementById("mod-remainder").textContent =
-            `${a} mod ${m} = ${rem}`;
-          const inv = modInv(a, m);
-          const g = (function (x, y) {
-            while (y) {
-              [x, y] = [y, x % y];
-            }
-            return x;
-          })(Math.abs(a), m);
-          document.getElementById("mod-inverse").textContent =
-            inv !== null
-              ? `Inverse of ${a} modulo ${m} = ${inv} (since ${a} × ${inv} ≡ 1 mod ${m})`
-              : `No modular inverse exists (gcd(${a}, ${m}) = ${g} ≠ 1)`;
-          document.getElementById("mod-steps").innerHTML = [
-            `<li><div class="step-num">1</div>${a} = ${Math.floor(a / m)} × ${m} + <span>${rem}</span></li>`,
-            `<li><div class="step-num">2</div>Therefore, ${a} ≡ <span>${rem}</span> (mod ${m})</li>`,
-            inv !== null
-              ? `<li><div class="step-num">3</div>gcd(${a}, ${m}) = 1, so inverse exists: <span>${inv}</span></li>`
-              : `<li><div class="step-num">3</div>gcd(${a}, ${m}) = ${g} ≠ 1, so no inverse</li>`,
-          ].join("");
-          document.getElementById("mod-result").classList.add("show");
         };
 
         // ── TRUTH TABLE ──
@@ -1461,7 +1349,6 @@
             const id = document.querySelector(".tool-panel.active")?.id;
             if (id === "panel-prime") solvePrime();
             if (id === "panel-gcdlcm") solveGCDLCM();
-            if (id === "panel-modular") solveModular();
             if (id === "panel-truth") solveTruth();
             if (id === "panel-sets") solveSets();
           }
