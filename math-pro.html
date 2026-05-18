@@ -1,0 +1,1923 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Math Pro</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #1a1008;
+        --deep: #1f1409;
+        --surface: #26180b;
+        --card: #2c1c0e;
+        --rim: rgba(180, 120, 60, 0.22);
+        --rim2: rgba(180, 120, 60, 0.09);
+        --gold: #b47830;
+        --gold2: #d4a060;
+        --silver: #c8b89a;
+        --rose: #c0603a;
+        --teal: #8caa6e;
+        --text: #f0e8d8;
+        --muted: #8a7560;
+        --faint: rgba(180, 120, 60, 0.06);
+        --glow-g: rgba(180, 120, 60, 0.12);
+        --glow-t: rgba(140, 170, 110, 0.1);
+      }
+      *,
+      ::before,
+      ::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "DM Mono", monospace;
+        background: var(--ink);
+        color: var(--text);
+        min-height: 100vh;
+        overflow-x: hidden;
+        cursor: none;
+      }
+
+      .cursor {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--gold);
+        position: fixed;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        transition:
+          transform 0.12s ease,
+          opacity 0.2s;
+        mix-blend-mode: difference;
+      }
+      .cursor-ring {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid rgba(180, 120, 60, 0.5);
+        position: fixed;
+        pointer-events: none;
+        z-index: 9998;
+        transform: translate(-50%, -50%);
+        transition:
+          left 0.08s ease,
+          top 0.08s ease;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+        opacity: 0.45;
+      }
+
+      .orb {
+        position: fixed;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 0;
+        filter: blur(80px);
+        animation: pulse 14s ease-in-out infinite alternate;
+      }
+      .orb-1 {
+        width: 600px;
+        height: 600px;
+        top: -160px;
+        left: -160px;
+        background: radial-gradient(
+          circle,
+          rgba(180, 120, 60, 0.09),
+          transparent 70%
+        );
+      }
+      .orb-2 {
+        width: 500px;
+        height: 500px;
+        bottom: -100px;
+        right: -100px;
+        background: radial-gradient(
+          circle,
+          rgba(140, 170, 110, 0.07),
+          transparent 70%
+        );
+        animation-delay: 3s;
+      }
+      .orb-3 {
+        width: 300px;
+        height: 300px;
+        top: 40%;
+        left: 55%;
+        background: radial-gradient(
+          circle,
+          rgba(192, 96, 58, 0.06),
+          transparent 70%
+        );
+        animation-delay: 5s;
+      }
+      @keyframes pulse {
+        0% {
+          opacity: 0.6;
+          transform: scale(1);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1.12);
+        }
+      }
+
+      #cosCanvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.45;
+      }
+
+      /* scroll progress */
+      #scrollBar {
+        position: fixed;
+        top: 62px;
+        left: 0;
+        height: 2px;
+        width: 0%;
+        background: linear-gradient(90deg, var(--gold), var(--gold2));
+        z-index: 200;
+        transition: width 0.1s linear;
+      }
+
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2.5rem;
+        height: 62px;
+        background: rgba(26, 16, 8, 0.82);
+        backdrop-filter: blur(24px);
+        border-bottom: 1px solid var(--rim);
+      }
+      .nav-brand {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.35rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        color: var(--gold2);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .nav-brand::before {
+        content: "✦";
+        font-size: 0.8rem;
+        color: var(--gold);
+        animation: spin 20s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .nav-links {
+        display: flex;
+        gap: 0;
+      }
+      .nav-links a {
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        text-decoration: none;
+        padding: 0.4rem 0.9rem;
+        border-radius: 4px;
+        transition:
+          color 0.2s,
+          background 0.2s;
+        font-family: "DM Mono", monospace;
+      }
+      .nav-links a:hover {
+        color: var(--gold2);
+        background: var(--faint);
+      }
+
+      .wrap {
+        position: relative;
+        z-index: 1;
+        max-width: 1140px;
+        margin: 0 auto;
+        padding: 0 1.5rem 6rem;
+      }
+
+      /* HERO */
+      .hero {
+        text-align: center;
+        padding: 7rem 1rem 4rem;
+        position: relative;
+      }
+      .hero::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 320px;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--gold),
+          transparent
+        );
+      }
+      .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.68rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 2rem;
+        padding: 0.3rem 1.1rem;
+        border: 1px solid var(--rim);
+        border-radius: 2px;
+        background: var(--faint);
+        animation: fadeUp 0.8s ease both;
+      }
+      .hero-eyebrow span {
+        width: 18px;
+        height: 1px;
+        background: var(--gold);
+        display: inline-block;
+      }
+      .hero h1 {
+        font-family: "Cormorant Garamond", serif;
+        font-size: clamp(3rem, 8vw, 7.5rem);
+        font-weight: 300;
+        line-height: 1;
+        letter-spacing: -0.01em;
+        color: #fff;
+        animation:
+          fadeUp 0.8s 0.1s ease both,
+          float 5s 1s ease-in-out infinite;
+        margin-bottom: 0.5rem;
+      }
+      .hero h1 em {
+        font-style: italic;
+        background: linear-gradient(
+          135deg,
+          var(--gold) 0%,
+          var(--gold2) 50%,
+          var(--rose) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .hero-sub {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.25rem;
+        font-weight: 300;
+        font-style: italic;
+        color: var(--silver);
+        letter-spacing: 0.04em;
+        margin-bottom: 3rem;
+        animation: fadeUp 0.8s 0.2s ease both;
+      }
+      .hero-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+        animation: fadeUp 0.8s 0.3s ease both;
+      }
+      .tag {
+        font-size: 0.65rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 0.3rem 0.9rem;
+        border: 1px solid var(--rim);
+        color: var(--muted);
+        background: var(--faint);
+        border-radius: 2px;
+        cursor: default;
+        transition: all 0.25s;
+      }
+      .tag:hover {
+        border-color: var(--gold);
+        color: var(--gold2);
+        background: rgba(180, 120, 60, 0.08);
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-8px);
+        }
+      }
+
+      /* SECTION HEAD */
+      .section-head {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin: 5rem 0 2rem;
+      }
+      .section-head-num {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 4rem;
+        font-weight: 300;
+        line-height: 1;
+        color: var(--rim);
+        letter-spacing: -0.02em;
+        flex-shrink: 0;
+        transition: color 0.6s;
+      }
+      .section-head-num.counted {
+        color: rgba(180, 120, 60, 0.5);
+      }
+      .section-head-label {
+        font-size: 0.65rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 0.2rem;
+      }
+      .section-head h2 {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 2rem;
+        font-weight: 400;
+        letter-spacing: -0.01em;
+      }
+      .section-head-line {
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, var(--rim), transparent);
+      }
+
+      /* LESSON CARDS */
+      .lesson-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+        gap: 1px;
+        border: 1px solid var(--rim);
+        border-radius: 8px;
+        overflow: hidden;
+        background: var(--rim2);
+      }
+      .lcard {
+        background: var(--card);
+        padding: 1.75rem;
+        transition: background 0.25s;
+        position: relative;
+        overflow: hidden;
+      }
+      .lcard::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--gold),
+          transparent
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .lcard::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          105deg,
+          transparent 40%,
+          rgba(255, 255, 255, 0.04) 50%,
+          transparent 60%
+        );
+        transform: translateX(-100%);
+        transition: transform 0s;
+      }
+      .lcard:hover {
+        background: #311e0f;
+      }
+      .lcard:hover::before {
+        opacity: 1;
+      }
+      .lcard:hover::after {
+        transform: translateX(100%);
+        transition: transform 0.55s ease;
+      }
+      .lcard-icon {
+        font-size: 1.4rem;
+        margin-bottom: 0.75rem;
+        display: block;
+      }
+      .lcard h3 {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--gold2);
+        margin-bottom: 0.6rem;
+        letter-spacing: 0.02em;
+      }
+      .lcard p,
+      .lcard ul {
+        font-size: 0.72rem;
+        color: var(--silver);
+        line-height: 1.8;
+      }
+      .lcard ul {
+        padding-left: 1rem;
+      }
+      .lcard li {
+        margin-bottom: 0.15rem;
+      }
+      .formula {
+        display: block;
+        font-family: "DM Mono", monospace;
+        font-size: 0.7rem;
+        background: rgba(180, 120, 60, 0.07);
+        border-left: 2px solid var(--gold);
+        padding: 0.4rem 0.7rem;
+        margin: 0.5rem 0;
+        color: var(--gold2);
+        border-radius: 0 4px 4px 0;
+      }
+
+      /* TOOL CARDS */
+      .tool-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 1.5rem;
+      }
+      .tool-grid .wide {
+        grid-column: 1/-1;
+      }
+
+      .tcard {
+        background: var(--card);
+        border: 1px solid var(--rim2);
+        border-radius: 8px;
+        padding: 1.75rem;
+        position: relative;
+        overflow: hidden;
+        transition:
+          border-color 0.3s,
+          box-shadow 0.3s;
+      }
+      .tcard::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--gold),
+          var(--gold2),
+          transparent
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .tcard::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(
+          600px circle at var(--mx, 50%) var(--my, 50%),
+          rgba(180, 120, 60, 0.05),
+          transparent 40%
+        );
+        opacity: 0;
+        transition: opacity 0.4s;
+      }
+      .tcard:hover {
+        border-color: var(--rim);
+        box-shadow: 0 0 40px rgba(180, 120, 60, 0.07);
+      }
+      .tcard:hover::after {
+        opacity: 1;
+      }
+      .tcard:hover::before {
+        opacity: 1;
+      }
+
+      .tcard-tag {
+        font-size: 0.6rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 0.5rem;
+        display: block;
+      }
+      .tcard h3 {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 0.3rem;
+        letter-spacing: -0.01em;
+      }
+      .tcard-desc {
+        font-size: 0.72rem;
+        color: var(--muted);
+        line-height: 1.75;
+        margin-bottom: 1.25rem;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-bottom: 1rem;
+      }
+      .chip {
+        font-family: "DM Mono", monospace;
+        font-size: 0.65rem;
+        padding: 0.2rem 0.55rem;
+        border: 1px solid var(--rim);
+        color: var(--muted);
+        border-radius: 2px;
+        cursor: pointer;
+        transition: all 0.18s;
+        background: transparent;
+      }
+      .chip:hover {
+        border-color: var(--gold);
+        color: var(--gold2);
+        background: rgba(180, 120, 60, 0.07);
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        margin-bottom: 0.75rem;
+      }
+      .field label {
+        font-size: 0.62rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      input[type="text"],
+      input[type="number"],
+      select,
+      textarea {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(180, 120, 60, 0.22);
+        border-radius: 4px;
+        color: var(--text);
+        font-family: "DM Mono", monospace;
+        font-size: 0.78rem;
+        padding: 0.6rem 0.85rem;
+        width: 100%;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--gold);
+        background: rgba(180, 120, 60, 0.04);
+      }
+      textarea {
+        resize: vertical;
+        min-height: 60px;
+      }
+      select option {
+        background: var(--deep);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-family: "Cormorant Garamond", serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        padding: 0.6rem 1.5rem;
+        border: 1px solid var(--gold);
+        border-radius: 3px;
+        cursor: pointer;
+        background: transparent;
+        color: var(--gold2);
+        transition: all 0.2s;
+        position: relative;
+        overflow: hidden;
+      }
+      .btn::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, var(--gold), var(--gold2));
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+      .btn:hover {
+        color: #111;
+        box-shadow: 0 0 24px rgba(180, 120, 60, 0.3);
+      }
+      .btn:hover::before {
+        opacity: 1;
+      }
+      .btn span {
+        position: relative;
+        z-index: 1;
+      }
+      .btn.teal {
+        border-color: var(--teal);
+        color: var(--teal);
+      }
+      .btn.teal:hover {
+        color: #111;
+      }
+      .btn.teal::before {
+        background: linear-gradient(135deg, var(--teal), #aed68a);
+      }
+      .btn.rose {
+        border-color: var(--rose);
+        color: var(--rose);
+      }
+      .btn.rose:hover {
+        color: #fff;
+      }
+      .btn.rose::before {
+        background: linear-gradient(135deg, var(--rose), #e08868);
+      }
+
+      .result {
+        margin-top: 1.25rem;
+        background: rgba(180, 120, 60, 0.04);
+        border: 1px solid rgba(180, 120, 60, 0.15);
+        border-radius: 4px;
+        padding: 0.9rem 1rem;
+        font-family: "DM Mono", monospace;
+        font-size: 0.74rem;
+        color: var(--teal);
+        line-height: 1.8;
+        white-space: pre-wrap;
+        word-break: break-all;
+        display: none;
+        animation: fadeIn 0.3s ease;
+        position: relative;
+      }
+      .result::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--teal);
+        border-radius: 2px 0 0 2px;
+        animation: borderPulse 2s ease-in-out infinite;
+      }
+      @keyframes borderPulse {
+        0%,
+        100% {
+          opacity: 0.4;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .result.show {
+        display: block;
+      }
+      .step {
+        color: var(--muted);
+      }
+      .hl {
+        color: var(--gold2);
+        font-weight: 500;
+      }
+      .ans {
+        color: var(--teal);
+        font-weight: 500;
+        font-size: 0.85rem;
+      }
+      .err {
+        color: var(--rose);
+      }
+
+      .tt-wrap {
+        overflow-x: auto;
+        margin-top: 1.25rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: "DM Mono", monospace;
+        font-size: 0.74rem;
+      }
+      th {
+        background: rgba(180, 120, 60, 0.09);
+        color: var(--gold2);
+        padding: 0.5rem 0.9rem;
+        text-align: center;
+        border: 1px solid var(--rim2);
+        font-weight: 400;
+        letter-spacing: 0.06em;
+      }
+      td {
+        padding: 0.4rem 0.9rem;
+        text-align: center;
+        border: 1px solid rgba(180, 120, 60, 0.08);
+      }
+      tr:nth-child(even) td {
+        background: rgba(255, 255, 255, 0.015);
+      }
+      td.T {
+        color: var(--teal);
+        font-weight: 500;
+      }
+      td.F {
+        color: var(--rose);
+      }
+
+      .pair {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.6rem;
+      }
+      .triple {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0.6rem;
+      }
+
+      svg.venn {
+        display: block;
+        margin: 0.75rem auto 0;
+      }
+
+      footer {
+        position: relative;
+        z-index: 1;
+        border-top: 1px solid var(--rim2);
+        text-align: center;
+        padding: 2.5rem 1rem;
+      }
+      footer p {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 0.95rem;
+        font-style: italic;
+        color: var(--muted);
+        letter-spacing: 0.04em;
+      }
+      footer a {
+        color: var(--gold);
+        text-decoration: none;
+      }
+
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--ink);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(180, 120, 60, 0.35);
+        border-radius: 3px;
+      }
+
+      @media (max-width: 600px) {
+        .nav-links {
+          display: none;
+        }
+        .tool-grid,
+        .lesson-grid {
+          grid-template-columns: 1fr;
+        }
+        .pair,
+        .triple {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cursor" id="cur"></div>
+    <div class="cursor-ring" id="curR"></div>
+    <div id="scrollBar"></div>
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <canvas id="cosCanvas"></canvas>
+
+    <nav>
+      <div class="nav-brand">Math Pro</div>
+      <div class="nav-links">
+        <a href="#lessons">Lessons</a>
+        <a href="#basic">Arithmetic</a>
+        <a href="#discrete">Number Theory</a>
+        <a href="#stats">Statistics</a>
+        <a href="#logic">Logic</a>
+      </div>
+    </nav>
+
+    <div class="wrap">
+      <!-- HERO -->
+      <section class="hero">
+        <div class="hero-eyebrow">
+          <span></span>Mathematical Suite<span></span>
+        </div>
+        <h1><em>Math Pro</em></h1>
+        <p class="hero-sub">Precision tools for curious minds</p>
+        <div class="hero-tags">
+          <span class="tag">Prime Theory</span>
+          <span class="tag">Euclidean Algorithm</span>
+          <span class="tag">Propositional Logic</span>
+          <span class="tag">Set Operations</span>
+          <span class="tag">Combinatorics</span>
+          <span class="tag">Statistics</span>
+          <span class="tag">Percentages</span>
+          <span class="tag">Truth Tables</span>
+          <span class="tag">Fractions</span>
+        </div>
+      </section>
+
+      <!-- LESSONS -->
+      <div id="lessons">
+        <div class="section-head">
+          <div class="section-head-num" data-target="1">01</div>
+          <div class="section-head-text">
+            <div class="section-head-label">Reference</div>
+            <h2>Essential Lessons</h2>
+          </div>
+          <div class="section-head-line"></div>
+        </div>
+        <div class="lesson-grid">
+          <div class="lcard">
+            <span class="lcard-icon">⊕</span>
+            <h3>Order of Operations</h3>
+            <ul>
+              <li><b>P</b>arentheses first</li>
+              <li><b>E</b>xponents next</li>
+              <li><b>M</b>ultiply &amp; <b>D</b>ivide (L→R)</li>
+              <li><b>A</b>dd &amp; <b>S</b>ubtract (L→R)</li>
+            </ul>
+            <code class="formula">3 + 4 × 2 = 3 + 8 = 11</code>
+          </div>
+          <div class="lcard">
+            <span class="lcard-icon">∶</span>
+            <h3>Fractions &amp; Percentages</h3>
+            <ul>
+              <li>Add fractions → find LCD first</li>
+              <li>% = (part ÷ whole) × 100</li>
+            </ul>
+            <code class="formula">¾ + ⅔ = 9/12 + 8/12 = 17/12</code>
+            <code class="formula">% = (part / whole) × 100</code>
+          </div>
+          <div class="lcard">
+            <span class="lcard-icon">𝕡</span>
+            <h3>Prime Numbers</h3>
+            <ul>
+              <li>Exactly 2 factors: 1 and itself</li>
+              <li>Test divisibility up to √n</li>
+              <li>Every integer &gt; 1 has unique prime factorization</li>
+            </ul>
+            <code class="formula">360 = 2³ × 3² × 5</code>
+          </div>
+          <div class="lcard">
+            <span class="lcard-icon">∩</span>
+            <h3>GCD &amp; LCM</h3>
+            <p>GCD: largest shared factor. LCM: smallest shared multiple.</p>
+            <code class="formula">GCD(a,b) = GCD(b, a mod b)</code>
+            <code class="formula">LCM(a,b) = |a·b| / GCD(a,b)</code>
+          </div>
+          <div class="lcard">
+            <span class="lcard-icon">μ</span>
+            <h3>Mean · Median · Mode</h3>
+            <ul>
+              <li><b>Mean</b>: Σx ÷ n</li>
+              <li><b>Median</b>: middle value (sorted)</li>
+              <li><b>Mode</b>: most frequent value</li>
+              <li><b>Range</b>: max − min</li>
+            </ul>
+            <code class="formula">Mean{2,4,6,8} = 20/4 = 5</code>
+          </div>
+          <div class="lcard">
+            <span class="lcard-icon">⊢</span>
+            <h3>Propositional Logic</h3>
+            <ul>
+              <li>¬P — NOT &nbsp;|&nbsp; P ∧ Q — AND</li>
+              <li>P ∨ Q — OR</li>
+              <li>P → Q — false only if P=T, Q=F</li>
+              <li>P ↔ Q — same truth value</li>
+            </ul>
+            <code class="formula">P → Q ≡ ¬P ∨ Q</code>
+          </div>
+          <div class="lcard">
+            <span class="lcard-icon">∈</span>
+            <h3>Set Theory</h3>
+            <ul>
+              <li>A ∪ B — union (A or B)</li>
+              <li>A ∩ B — intersection (both)</li>
+              <li>A − B — difference</li>
+              <li>A △ B — symmetric difference</li>
+            </ul>
+            <code class="formula">|A∪B| = |A| + |B| − |A∩B|</code>
+          </div>
+          <div class="lcard">
+            <span class="lcard-icon">ₙCᵣ</span>
+            <h3>Combinatorics</h3>
+            <ul>
+              <li><b>P(n,r)</b> = n!/(n−r)! — ordered</li>
+              <li><b>C(n,r)</b> = n!/[r!(n−r)!] — unordered</li>
+            </ul>
+            <code class="formula">C(5,2) = 10 &nbsp;|&nbsp; P(5,2) = 20</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- BASIC MATH -->
+      <div id="basic">
+        <div class="section-head">
+          <div class="section-head-num" data-target="2">02</div>
+          <div class="section-head-text">
+            <div class="section-head-label">Solvers</div>
+            <h2>Basic Mathematics</h2>
+          </div>
+          <div class="section-head-line"></div>
+        </div>
+        <div class="tool-grid">
+          <!-- EXPRESSION -->
+          <div class="tcard">
+            <span class="tcard-tag">Tool I</span>
+            <h3>Expression Evaluator</h3>
+            <p class="tcard-desc">
+              Evaluate any arithmetic expression. Supports +, −, ×, ÷, ^,
+              sqrt(), abs(), parentheses.
+            </p>
+            <div class="chips">
+              <span class="chip" onclick="setV('exprIn', '3 + 4 * 2')"
+                >3+4×2</span
+              >
+              <span class="chip" onclick="setV('exprIn', '(5+3)^2 / 4')"
+                >(5+3)²÷4</span
+              >
+              <span class="chip" onclick="setV('exprIn', 'sqrt(144)+5')"
+                >√144+5</span
+              >
+              <span class="chip" onclick="setV('exprIn', '100-25*3+2')"
+                >100−25×3+2</span
+              >
+            </div>
+            <div class="field">
+              <label>Expression</label>
+              <input
+                type="text"
+                id="exprIn"
+                placeholder="e.g. 3 + 4 * 2"
+                onkeydown="if (event.key === 'Enter') calcExpr();"
+              />
+            </div>
+            <button class="btn" onclick="calcExpr()">
+              <span>Evaluate →</span>
+            </button>
+            <div class="result" id="exprRes"></div>
+          </div>
+
+          <!-- PERCENTAGE -->
+          <div class="tcard">
+            <span class="tcard-tag">Tool II</span>
+            <h3>Percentage Calculator</h3>
+            <p class="tcard-desc">
+              Find X% of Y, determine what percent X is of Y, or calculate
+              percentage change.
+            </p>
+            <div class="field">
+              <label>Mode</label>
+              <select id="pctMode" onchange="renderPctMode()">
+                <option value="of">X% of Y</option>
+                <option value="what">X is what % of Y</option>
+                <option value="change">Percentage Change A → B</option>
+              </select>
+            </div>
+            <div id="pctFields">
+              <div class="pair">
+                <div class="field">
+                  <label>Percent (X)</label
+                  ><input type="number" id="pctX" placeholder="25" />
+                </div>
+                <div class="field">
+                  <label>Number (Y)</label
+                  ><input type="number" id="pctY" placeholder="200" />
+                </div>
+              </div>
+            </div>
+            <button class="btn rose" onclick="calcPct()">
+              <span>Calculate →</span>
+            </button>
+            <div class="result" id="pctRes"></div>
+          </div>
+
+          <!-- FRACTION -->
+          <div class="tcard">
+            <span class="tcard-tag">Tool III</span>
+            <h3>Fraction Calculator</h3>
+            <p class="tcard-desc">
+              Add, subtract, multiply or divide two fractions. Shows LCD working
+              and simplified result.
+            </p>
+            <div class="triple">
+              <div class="field">
+                <label>Numerator 1</label>
+                <input type="number" id="fn1" placeholder="3" />
+              </div>
+              <div class="field">
+                <label>Operator</label>
+                <select id="fop">
+                  <option value="+">＋ Add</option>
+                  <option value="-">－ Subtract</option>
+                  <option value="*">× Multiply</option>
+                  <option value="/">÷ Divide</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Numerator 2</label>
+                <input type="number" id="fn2" placeholder="2" />
+              </div>
+            </div>
+            <div class="pair">
+              <div class="field">
+                <label>Denominator 1</label>
+                <input type="number" id="fd1" placeholder="4" />
+              </div>
+              <div class="field">
+                <label>Denominator 2</label>
+                <input type="number" id="fd2" placeholder="3" />
+              </div>
+            </div>
+            <button class="btn teal" onclick="calcFraction()">
+              <span>Calculate →</span>
+            </button>
+            <div class="result" id="fracRes"></div>
+          </div>
+
+          <!-- COMBINATORICS -->
+          <div class="tcard">
+            <span class="tcard-tag">Tool IV</span>
+            <h3>Combinatorics Calculator</h3>
+            <p class="tcard-desc">
+              Calculate permutations P(n,r) and combinations C(n,r) with full
+              factorial breakdown.
+            </p>
+            <div class="pair">
+              <div class="field">
+                <label>n (total items)</label
+                ><input type="number" id="combN" placeholder="10" min="0" />
+              </div>
+              <div class="field">
+                <label>r (chosen)</label
+                ><input type="number" id="combR" placeholder="3" min="0" />
+              </div>
+            </div>
+            <button class="btn" onclick="calcComb()">
+              <span>Calculate →</span>
+            </button>
+            <div class="result" id="combRes"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NUMBER THEORY -->
+      <div id="discrete">
+        <div class="section-head">
+          <div class="section-head-num" data-target="3">03</div>
+          <div class="section-head-text">
+            <div class="section-head-label">Number Theory</div>
+            <h2>Primes &amp; Divisibility</h2>
+          </div>
+          <div class="section-head-line"></div>
+        </div>
+        <div class="tool-grid">
+          <!-- PRIME CHECK -->
+          <div class="tcard">
+            <span class="tcard-tag">Tool V</span>
+            <h3>Prime Checker</h3>
+            <p class="tcard-desc">
+              Test whether a number is prime and list all prime factors.
+            </p>
+            <div class="chips">
+              <span class="chip" onclick="setV('primeIn', '97')">97</span>
+              <span class="chip" onclick="setV('primeIn', '360')">360</span>
+              <span class="chip" onclick="setV('primeIn', '1')">1</span>
+              <span class="chip" onclick="setV('primeIn', '9973')">9973</span>
+            </div>
+            <div class="field">
+              <label>Number</label>
+              <input
+                type="number"
+                id="primeIn"
+                placeholder="e.g. 360"
+                onkeydown="if (event.key === 'Enter') checkPrime();"
+              />
+            </div>
+            <button class="btn" onclick="checkPrime()">
+              <span>Analyse →</span>
+            </button>
+            <div class="result" id="primeRes"></div>
+          </div>
+
+          <!-- GCD / LCM -->
+          <div class="tcard">
+            <span class="tcard-tag">Tool VI</span>
+            <h3>GCD &amp; LCM Solver</h3>
+            <p class="tcard-desc">
+              Computes Greatest Common Divisor and Least Common Multiple using
+              the Euclidean Algorithm.
+            </p>
+            <div class="pair">
+              <div class="field">
+                <label>Number A</label
+                ><input type="number" id="gcdA" placeholder="48" />
+              </div>
+              <div class="field">
+                <label>Number B</label
+                ><input type="number" id="gcdB" placeholder="18" />
+              </div>
+            </div>
+            <button class="btn rose" onclick="calcGCD()">
+              <span>Solve →</span>
+            </button>
+            <div class="result" id="gcdRes"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATISTICS -->
+      <div id="stats">
+        <div class="section-head">
+          <div class="section-head-num" data-target="4">04</div>
+          <div class="section-head-text">
+            <div class="section-head-label">Analysis</div>
+            <h2>Statistics Calculator</h2>
+          </div>
+          <div class="section-head-line"></div>
+        </div>
+        <div class="tool-grid">
+          <div class="tcard wide">
+            <span class="tcard-tag">Tool VII</span>
+            <h3>Descriptive Statistics</h3>
+            <p class="tcard-desc">
+              Enter a comma-separated list of numbers. Computes mean, median,
+              mode, range, variance, and standard deviation with full working.
+            </p>
+            <div class="chips">
+              <span
+                class="chip"
+                onclick="setV('statsIn', '4, 8, 6, 5, 3, 2, 8, 9, 2, 5')"
+                >Sample set A</span
+              >
+              <span
+                class="chip"
+                onclick="setV('statsIn', '12, 7, 3, 14, 6, 11, 5, 4, 12, 9, 7')"
+                >Sample set B</span
+              >
+              <span
+                class="chip"
+                onclick="setV('statsIn', '100, 200, 150, 250, 175')"
+                >Prices</span
+              >
+            </div>
+            <div class="field">
+              <label>Numbers (comma-separated)</label>
+              <input
+                type="text"
+                id="statsIn"
+                placeholder="e.g. 4, 8, 6, 5, 3, 2, 8, 9, 2, 5"
+              />
+            </div>
+            <button class="btn teal" onclick="calcStats()">
+              <span>Analyse →</span>
+            </button>
+            <div class="result" id="statsRes"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOGIC -->
+      <div id="logic">
+        <div class="section-head">
+          <div class="section-head-num" data-target="5">05</div>
+          <div class="section-head-text">
+            <div class="section-head-label">Formal Logic</div>
+            <h2>Logic &amp; Sets</h2>
+          </div>
+          <div class="section-head-line"></div>
+        </div>
+        <div class="tool-grid">
+          <!-- TRUTH TABLE -->
+          <div class="tcard wide">
+            <span class="tcard-tag">Tool VIII</span>
+            <h3>Truth Table Generator</h3>
+            <p class="tcard-desc">
+              Generate a truth table for any propositional formula. Use: &amp;
+              (AND), | (OR), ! (NOT), -&gt; (implies), &lt;-&gt;
+              (biconditional).
+            </p>
+            <div class="chips">
+              <span class="chip" onclick="setV('ttIn', 'P & Q')">P ∧ Q</span>
+              <span class="chip" onclick="setV('ttIn', 'P | Q')">P ∨ Q</span>
+              <span class="chip" onclick="setV('ttIn', '!P | Q')">P → Q</span>
+              <span class="chip" onclick="setV('ttIn', '(P | Q) & !R')"
+                >Complex</span
+              >
+              <span class="chip" onclick="setV('ttIn', 'P <-> Q')">P ↔ Q</span>
+            </div>
+            <div class="field">
+              <label>Formula</label>
+              <input
+                type="text"
+                id="ttIn"
+                placeholder="e.g. P & Q"
+                onkeydown="if (event.key === 'Enter') genTT();"
+              />
+            </div>
+            <button class="btn" onclick="genTT()">
+              <span>Generate →</span>
+            </button>
+            <div id="ttOut"></div>
+          </div>
+
+          <!-- SET OPS -->
+          <div class="tcard wide">
+            <span class="tcard-tag">Tool IX</span>
+            <h3>Set Operations</h3>
+            <p class="tcard-desc">
+              Enter two sets of numbers and compute all set operations with Venn
+              diagram.
+            </p>
+            <div class="pair">
+              <div class="field">
+                <label>Set A (comma-separated)</label
+                ><input type="text" id="setA" placeholder="1, 2, 3, 4, 5" />
+              </div>
+              <div class="field">
+                <label>Set B (comma-separated)</label
+                ><input type="text" id="setB" placeholder="3, 4, 5, 6, 7" />
+              </div>
+            </div>
+            <button class="btn teal" onclick="calcSets()">
+              <span>Compute →</span>
+            </button>
+            <div class="result" id="setRes"></div>
+            <div id="vennOut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /wrap -->
+
+    <footer>
+      <p>
+        Math Pro — precision tools for curious minds &nbsp;·&nbsp;
+        <span id="yr"></span>
+      </p>
+    </footer>
+
+    <script>
+      // ── Cursor ──
+      const cur = document.getElementById("cur"),
+        curR = document.getElementById("curR");
+      document.addEventListener("mousemove", (e) => {
+        cur.style.left = e.clientX + "px";
+        cur.style.top = e.clientY + "px";
+        curR.style.left = e.clientX + "px";
+        curR.style.top = e.clientY + "px";
+      });
+
+      // ── Scroll progress ──
+      window.addEventListener("scroll", () => {
+        const el = document.getElementById("scrollBar");
+        const pct =
+          (window.scrollY / (document.body.scrollHeight - window.innerHeight)) *
+          100;
+        el.style.width = pct + "%";
+      });
+
+      // ── tcard mouse glow ──
+      document.querySelectorAll(".tcard").forEach((c) => {
+        c.addEventListener("mousemove", (e) => {
+          const r = c.getBoundingClientRect();
+          c.style.setProperty(
+            "--mx",
+            ((e.clientX - r.left) / r.width) * 100 + "%",
+          );
+          c.style.setProperty(
+            "--my",
+            ((e.clientY - r.top) / r.height) * 100 + "%",
+          );
+        });
+      });
+
+      // ── Stars canvas ──
+      (function () {
+        const cv = document.getElementById("cosCanvas");
+        const ctx = cv.getContext("2d");
+        let W,
+          H,
+          stars = [];
+        function resize() {
+          W = cv.width = window.innerWidth;
+          H = cv.height = window.innerHeight;
+          init();
+        }
+        function init() {
+          stars = [];
+          for (let i = 0; i < 140; i++)
+            stars.push({
+              x: Math.random() * W,
+              y: Math.random() * H,
+              r: Math.random() * 1.2 + 0.2,
+              a: Math.random(),
+              da: (Math.random() - 0.5) * 0.008,
+            });
+        }
+        function draw() {
+          ctx.clearRect(0, 0, W, H);
+          stars.forEach((s) => {
+            s.a += s.da;
+            if (s.a <= 0 || s.a >= 1) s.da *= -1;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(212,160,96,${s.a * 0.6})`;
+            ctx.fill();
+          });
+          requestAnimationFrame(draw);
+        }
+        window.addEventListener("resize", resize);
+        resize();
+        draw();
+      })();
+
+      // ── Count-up section numbers ──
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              const el = e.target;
+              if (el.dataset.counted) return;
+              el.dataset.counted = true;
+              const target = parseInt(el.dataset.target);
+              let cur = 0;
+              const step = () => {
+                cur++;
+                el.textContent = String(cur).padStart(2, "0");
+                if (cur < target) setTimeout(step, 80);
+              };
+              step();
+              el.classList.add("counted");
+            }
+          });
+        },
+        { threshold: 0.5 },
+      );
+      document
+        .querySelectorAll(".section-head-num[data-target]")
+        .forEach((el) => observer.observe(el));
+
+      // ── Utilities ──
+      function setV(id, val) {
+        document.getElementById(id).value = val;
+      }
+      function show(id, html, cls = "show") {
+        const el = document.getElementById(id);
+        el.innerHTML = html;
+        el.className = "result " + cls;
+      }
+
+      // ── Expression Evaluator ──
+      function calcExpr() {
+        let raw = document.getElementById("exprIn").value.trim();
+        if (!raw) return;
+        try {
+          let expr = raw
+            .replace(/sqrt\(([^)]+)\)/g, "Math.sqrt($1)")
+            .replace(/abs\(([^)]+)\)/g, "Math.abs($1)")
+            .replace(/\^/g, "**")
+            .replace(/×/g, "*")
+            .replace(/÷/g, "/")
+            .replace(/−/g, "-");
+          const result = Function('"use strict";return (' + expr + ")")();
+          if (!isFinite(result))
+            throw new Error("Division by zero or undefined");
+          show(
+            "exprRes",
+            `<span class="step">Expression:</span>  <span class="hl">${raw}</span>\n<span class="step">Result:    </span>  <span class="ans">${+result.toFixed(10)}</span>`,
+          );
+        } catch (err) {
+          show("exprRes", `<span class="err">Error: ${err.message}</span>`);
+        }
+      }
+
+      // ── Percentage ──
+      function renderPctMode() {
+        const mode = document.getElementById("pctMode").value;
+        const f = document.getElementById("pctFields");
+        if (mode === "of" || mode === "what") {
+          f.innerHTML = `<div class="pair">
+      <div class="field"><label>${mode === "of" ? "Percent (X)" : "Value (X)"}</label><input type="number" id="pctX" placeholder="${mode === "of" ? "25" : "50"}"/></div>
+      <div class="field"><label>${mode === "of" ? "Number (Y)" : "Total (Y)"}</label><input type="number" id="pctY" placeholder="${mode === "of" ? "200" : "200"}"/></div>
+    </div>`;
+        } else {
+          f.innerHTML = `<div class="pair">
+      <div class="field"><label>Original (A)</label><input type="number" id="pctX" placeholder="80"/></div>
+      <div class="field"><label>New (B)</label><input type="number" id="pctY" placeholder="100"/></div>
+    </div>`;
+        }
+      }
+      function calcPct() {
+        const mode = document.getElementById("pctMode").value;
+        const x = parseFloat(document.getElementById("pctX").value);
+        const y = parseFloat(document.getElementById("pctY").value);
+        if (isNaN(x) || isNaN(y)) {
+          show("pctRes", '<span class="err">Please fill both fields.</span>');
+          return;
+        }
+        let out = "";
+        if (mode === "of") {
+          const r = (x / 100) * y;
+          out = `<span class="step">Formula:</span>  <span class="hl">${x}% × ${y} = ${x}/100 × ${y}</span>\n<span class="ans">Answer: ${+r.toFixed(6)}</span>`;
+        } else if (mode === "what") {
+          if (y === 0) {
+            show("pctRes", '<span class="err">Total cannot be 0.</span>');
+            return;
+          }
+          const r = (x / y) * 100;
+          out = `<span class="step">Formula:</span>  <span class="hl">(${x} ÷ ${y}) × 100</span>\n<span class="ans">Answer: ${+r.toFixed(4)}%</span>`;
+        } else {
+          if (x === 0) {
+            show("pctRes", '<span class="err">Original cannot be 0.</span>');
+            return;
+          }
+          const r = ((y - x) / x) * 100;
+          const dir = r >= 0 ? "increase" : "decrease";
+          out = `<span class="step">Formula:</span>  <span class="hl">((${y} − ${x}) ÷ ${x}) × 100</span>\n<span class="step">Change:</span>   <span class="hl">${y - x} ÷ ${x} × 100</span>\n<span class="ans">${+r.toFixed(4)}% ${dir}</span>`;
+        }
+        show("pctRes", out);
+      }
+
+      // ── Fractions ──
+      function gcd(a, b) {
+        a = Math.abs(a);
+        b = Math.abs(b);
+        while (b) {
+          [a, b] = [b, a % b];
+        }
+        return a;
+      }
+      function lcm(a, b) {
+        return Math.abs(a * b) / gcd(a, b);
+      }
+      function simplify(n, d) {
+        const g = gcd(Math.abs(n), Math.abs(d));
+        const sign = d < 0 ? -1 : 1;
+        return [(sign * n) / g, (sign * d) / g];
+      }
+      function fmtFrac(n, d) {
+        if (d === 1) return String(n);
+        return n + "/" + d;
+      }
+
+      function calcFraction() {
+        const n1 = parseInt(document.getElementById("fn1").value);
+        const d1 = parseInt(document.getElementById("fd1").value);
+        const op = document.getElementById("fop").value;
+        const n2 = parseInt(document.getElementById("fn2").value);
+        const d2 = parseInt(document.getElementById("fd2").value);
+        if ([n1, d1, n2, d2].some((v) => isNaN(v))) {
+          show("fracRes", '<span class="err">Fill all fields.</span>');
+          return;
+        }
+        if (d1 === 0 || d2 === 0) {
+          show(
+            "fracRes",
+            '<span class="err">Denominators cannot be zero.</span>',
+          );
+          return;
+        }
+        if (op === "/" && n2 === 0) {
+          show(
+            "fracRes",
+            '<span class="err">Cannot divide by zero fraction.</span>',
+          );
+          return;
+        }
+
+        let rn,
+          rd,
+          steps = "";
+        const opSymbols = { "+": "＋", "-": "－", "*": "×", "/": "÷" };
+
+        steps += `<span class="step">Given:</span>  <span class="hl">${fmtFrac(n1, d1)} ${opSymbols[op]} ${fmtFrac(n2, d2)}</span>\n`;
+
+        if (op === "+" || op === "-") {
+          const l = lcm(d1, d2);
+          const an1 = n1 * (l / d1),
+            an2 = n2 * (l / d2);
+          steps += `<span class="step">LCD:</span>    <span class="hl">lcm(${d1}, ${d2}) = ${l}</span>\n`;
+          steps += `<span class="step">Convert:</span> <span class="hl">${fmtFrac(an1, l)} ${opSymbols[op]} ${fmtFrac(an2, l)}</span>\n`;
+          rn = op === "+" ? an1 + an2 : an1 - an2;
+          rd = l;
+        } else if (op === "*") {
+          steps += `<span class="step">Multiply:</span> <span class="hl">(${n1}×${n2}) / (${d1}×${d2})</span>\n`;
+          rn = n1 * n2;
+          rd = d1 * d2;
+        } else {
+          steps += `<span class="step">Invert:</span>  <span class="hl">${fmtFrac(n1, d1)} × ${fmtFrac(d2, n2)}</span>\n`;
+          rn = n1 * d2;
+          rd = d1 * n2;
+        }
+
+        const [sn, sd] = simplify(rn, rd);
+        const dec = sn / sd;
+        steps += `<span class="step">Raw result:</span> <span class="hl">${fmtFrac(rn, rd)}</span>\n`;
+        if (rn !== sn || rd !== sd)
+          steps += `<span class="step">Simplified:</span> <span class="hl">${fmtFrac(sn, sd)}</span>\n`;
+        steps += `<span class="ans">Answer: ${fmtFrac(sn, sd)}  (≈ ${+dec.toFixed(6)})</span>`;
+        show("fracRes", steps);
+      }
+
+      // ── Combinatorics ──
+      function factorial(n) {
+        if (n < 0) return NaN;
+        if (n === 0 || n === 1) return 1;
+        let r = 1;
+        for (let i = 2; i <= n; i++) r *= i;
+        return r;
+      }
+      function calcComb() {
+        const n = parseInt(document.getElementById("combN").value);
+        const r = parseInt(document.getElementById("combR").value);
+        if (isNaN(n) || isNaN(r)) {
+          show("combRes", '<span class="err">Enter both n and r.</span>');
+          return;
+        }
+        if (r > n) {
+          show("combRes", '<span class="err">r cannot exceed n.</span>');
+          return;
+        }
+        if (n < 0 || r < 0) {
+          show(
+            "combRes",
+            '<span class="err">Values must be non-negative.</span>',
+          );
+          return;
+        }
+        if (n > 20) {
+          show(
+            "combRes",
+            '<span class="err">n must be ≤ 20 (factorial limit).</span>',
+          );
+          return;
+        }
+        const fn = factorial(n),
+          fr = factorial(r),
+          fnr = factorial(n - r);
+        const P = fn / fnr;
+        const C = fn / (fr * fnr);
+        const out =
+          `<span class="step">n = ${n},  r = ${r}</span>\n\n` +
+          `<span class="hl">Permutation P(${n},${r})</span>\n` +
+          `<span class="step">  = ${n}! / (${n}-${r})!</span>\n` +
+          `<span class="step">  = ${fn} / ${fnr}</span>\n` +
+          `<span class="ans">  = ${P}</span>\n\n` +
+          `<span class="hl">Combination C(${n},${r})</span>\n` +
+          `<span class="step">  = ${n}! / [${r}! × (${n}-${r})!]</span>\n` +
+          `<span class="step">  = ${fn} / [${fr} × ${fnr}]</span>\n` +
+          `<span class="ans">  = ${C}</span>`;
+        show("combRes", out);
+      }
+
+      // ── Prime Checker & Factorization ──
+      function checkPrime() {
+        const n = parseInt(document.getElementById("primeIn").value);
+        if (isNaN(n) || n < 1) {
+          show(
+            "primeRes",
+            '<span class="err">Enter a positive integer.</span>',
+          );
+          return;
+        }
+        if (n > 10000000) {
+          show("primeRes", '<span class="err">Max 10,000,000.</span>');
+          return;
+        }
+
+        function factors(num) {
+          const f = [];
+          let d = 2;
+          let tmp = num;
+          while (d * d <= tmp) {
+            while (tmp % d === 0) {
+              f.push(d);
+              tmp = Math.floor(tmp / d);
+            }
+            d++;
+          }
+          if (tmp > 1) f.push(tmp);
+          return f;
+        }
+
+        const facs = factors(n);
+        const isPrime = n > 1 && facs.length === 1 && facs[0] === n;
+
+        if (n === 1) {
+          show(
+            "primeRes",
+            `<span class="hl">1</span> is <span class="err">neither prime nor composite</span>.\n<span class="step">1 has only one factor: itself.</span>`,
+          );
+          return;
+        }
+
+        let out = `<span class="hl">${n}</span> is <span class="${isPrime ? "ans" : "err"}">${isPrime ? "PRIME" : "COMPOSITE"}</span>\n\n`;
+
+        if (!isPrime) {
+          const counts = {};
+          facs.forEach((f) => {
+            counts[f] = (counts[f] || 0) + 1;
+          });
+          const factorStr = Object.entries(counts)
+            .map(([p, e]) => (e > 1 ? `${p}^${e}` : p))
+            .join(" × ");
+          out += `<span class="step">Prime Factorization:</span>\n<span class="hl">${n} = ${factorStr}</span>\n\n`;
+          out += `<span class="step">All factors of ${n}:</span>\n`;
+          const allFactors = [];
+          for (let i = 1; i <= Math.sqrt(n); i++) {
+            if (n % i === 0) {
+              allFactors.push(i);
+              if (i !== n / i) allFactors.push(n / i);
+            }
+          }
+          allFactors.sort((a, b) => a - b);
+          out += `<span class="hl">${allFactors.join(", ")}</span>`;
+        } else {
+          out += `<span class="step">${n} is divisible only by 1 and itself.</span>\n`;
+          out += `<span class="step">Tested all primes up to √${n} ≈ ${Math.sqrt(n).toFixed(2)}</span>`;
+        }
+        show("primeRes", out);
+      }
+
+      // ── GCD & LCM ──
+      function calcGCD() {
+        const a = parseInt(document.getElementById("gcdA").value);
+        const b = parseInt(document.getElementById("gcdB").value);
+        if (isNaN(a) || isNaN(b)) {
+          show("gcdRes", '<span class="err">Enter both values.</span>');
+          return;
+        }
+        if (a <= 0 || b <= 0) {
+          show("gcdRes", '<span class="err">Enter positive integers.</span>');
+          return;
+        }
+
+        let steps = `<span class="step">Euclidean Algorithm — GCD(${a}, ${b}):</span>\n`;
+        let x = a,
+          y = b;
+        while (y) {
+          steps += `<span class="step">  GCD(${x}, ${y}) → ${x} = ${Math.floor(x / y)}×${y} + ${x % y}</span>\n`;
+          [x, y] = [y, x % y];
+        }
+        const g = x;
+        const l = Math.abs(a * b) / g;
+        steps += `\n<span class="hl">GCD(${a}, ${b}) = <span class="ans">${g}</span></span>\n`;
+        steps += `<span class="hl">LCM(${a}, ${b}) = |${a}×${b}| / ${g} = <span class="ans">${l}</span></span>`;
+        show("gcdRes", steps);
+      }
+
+      // ── Statistics ──
+      function calcStats() {
+        const raw = document.getElementById("statsIn").value;
+        const nums = raw
+          .split(",")
+          .map((s) => parseFloat(s.trim()))
+          .filter((n) => !isNaN(n));
+        if (nums.length < 2) {
+          show(
+            "statsRes",
+            '<span class="err">Enter at least 2 numbers.</span>',
+          );
+          return;
+        }
+
+        const sorted = [...nums].sort((a, b) => a - b);
+        const n = nums.length;
+        const mean = nums.reduce((a, b) => a + b, 0) / n;
+
+        let median;
+        if (n % 2 === 0) median = (sorted[n / 2 - 1] + sorted[n / 2]) / 2;
+        else median = sorted[Math.floor(n / 2)];
+
+        const freq = {};
+        nums.forEach((v) => {
+          freq[v] = (freq[v] || 0) + 1;
+        });
+        const maxFreq = Math.max(...Object.values(freq));
+        const modes = Object.entries(freq)
+          .filter(([, f]) => f === maxFreq)
+          .map(([v]) => parseFloat(v));
+
+        const range = sorted[n - 1] - sorted[0];
+        const variance = nums.reduce((s, v) => s + (v - mean) ** 2, 0) / n;
+        const stddev = Math.sqrt(variance);
+
+        const out =
+          `<span class="step">n = ${n}  |  sorted: [${sorted.join(", ")}]</span>\n\n` +
+          `<span class="hl">Mean:     </span><span class="ans">${+mean.toFixed(4)}</span>  <span class="step">(Σx ÷ n = ${nums.reduce((a, b) => a + b, 0)} ÷ ${n})</span>\n` +
+          `<span class="hl">Median:   </span><span class="ans">${+median.toFixed(4)}</span>\n` +
+          `<span class="hl">Mode:     </span><span class="ans">${modes.join(", ")}</span>  <span class="step">(freq = ${maxFreq})</span>\n` +
+          `<span class="hl">Range:    </span><span class="ans">${+range.toFixed(4)}</span>  <span class="step">(${sorted[n - 1]} − ${sorted[0]})</span>\n` +
+          `<span class="hl">Variance: </span><span class="ans">${+variance.toFixed(4)}</span>\n` +
+          `<span class="hl">Std Dev:  </span><span class="ans">${+stddev.toFixed(4)}</span>`;
+        show("statsRes", out);
+      }
+
+      // ── Truth Table ──
+      function genTT() {
+        const raw = document.getElementById("ttIn").value.trim();
+        if (!raw) return;
+
+        const vars = [...new Set(raw.match(/[A-Z]/g) || [])].sort();
+        if (vars.length === 0) {
+          document.getElementById("ttOut").innerHTML =
+            '<div class="result show"><span class="err">No variables found.</span></div>';
+          return;
+        }
+        if (vars.length > 4) {
+          document.getElementById("ttOut").innerHTML =
+            '<div class="result show"><span class="err">Max 4 variables.</span></div>';
+          return;
+        }
+
+        function parse(expr, vals) {
+          let e = expr;
+          vars.forEach((v) => {
+            e = e.replace(
+              new RegExp("\\b" + v + "\\b", "g"),
+              vals[v] ? "true" : "false",
+            );
+          });
+          e = e
+            .replace(/<->/g, "===")
+            .replace(/->/g, "<=")
+            .replace(/&/g, "&&")
+            .replace(/\|/g, "||")
+            .replace(/!/g, "!");
+          try {
+            return Function('"use strict";return (' + e + ")")();
+          } catch {
+            return null;
+          }
+        }
+
+        const rows = [];
+        const n = vars.length;
+        for (let i = 0; i < Math.pow(2, n); i++) {
+          const vals = {};
+          vars.forEach((v, j) => {
+            vals[v] = !!((i >> (n - 1 - j)) & 1);
+          });
+          rows.push({ vals, result: parse(raw, vals) });
+        }
+
+        let html = '<div class="tt-wrap"><table><thead><tr>';
+        vars.forEach((v) => {
+          html += `<th>${v}</th>`;
+        });
+        html += `<th>${raw}</th></tr></thead><tbody>`;
+        rows.forEach((r) => {
+          html += "<tr>";
+          vars.forEach((v) => {
+            const val = r.vals[v];
+            html += `<td class="${val ? "T" : "F"}">${val ? "T" : "F"}</td>`;
+          });
+          const res = r.result;
+          html += `<td class="${res ? "T" : "F"}">${res ? "T" : "F"}</td>`;
+          html += "</tr>";
+        });
+        html += "</tbody></table></div>";
+        document.getElementById("ttOut").innerHTML = html;
+      }
+
+      // ── Set Operations ──
+      function calcSets() {
+        const rawA = document.getElementById("setA").value;
+        const rawB = document.getElementById("setB").value;
+        const A = [
+          ...new Set(
+            rawA
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean),
+          ),
+        ];
+        const B = [
+          ...new Set(
+            rawB
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean),
+          ),
+        ];
+        if (!A.length || !B.length) {
+          show("setRes", '<span class="err">Enter values in both sets.</span>');
+          return;
+        }
+
+        const union = [...new Set([...A, ...B])].sort();
+        const intersect = A.filter((x) => B.includes(x)).sort();
+        const diffAB = A.filter((x) => !B.includes(x)).sort();
+        const diffBA = B.filter((x) => !A.includes(x)).sort();
+        const symDiff = [...diffAB, ...diffBA].sort();
+
+        const out =
+          `<span class="hl">A     =</span> {${A.join(", ")}}\n` +
+          `<span class="hl">B     =</span> {${B.join(", ")}}\n\n` +
+          `<span class="hl">A ∪ B =</span> <span class="ans">{${union.join(", ")}}</span>  <span class="step">(${union.length} elements)</span>\n` +
+          `<span class="hl">A ∩ B =</span> <span class="ans">{${intersect.join(", ") || "∅"}}</span>  <span class="step">(${intersect.length} elements)</span>\n` +
+          `<span class="hl">A − B =</span> <span class="ans">{${diffAB.join(", ") || "∅"}}</span>\n` +
+          `<span class="hl">B − A =</span> <span class="ans">{${diffBA.join(", ") || "∅"}}</span>\n` +
+          `<span class="hl">A △ B =</span> <span class="ans">{${symDiff.join(", ") || "∅"}}</span>\n\n` +
+          `<span class="step">|A∪B| = |A| + |B| − |A∩B| = ${A.length} + ${B.length} − ${intersect.length} = ${union.length}</span>`;
+        show("setRes", out);
+
+        // Venn SVG
+        const totalUniq = [...new Set([...A, ...B])];
+        const aOnly = diffAB.length,
+          bOnly = diffBA.length,
+          both = intersect.length;
+        const venn = `<svg class="venn" viewBox="0 0 340 160" xmlns="http://www.w3.org/2000/svg" width="340" height="160">
+    <circle cx="120" cy="80" r="65" fill="rgba(180,120,60,0.15)" stroke="var(--gold)" stroke-width="1.5"/>
+    <circle cx="220" cy="80" r="65" fill="rgba(140,170,110,0.12)" stroke="var(--teal)" stroke-width="1.5"/>
+    <text x="75" y="84" text-anchor="middle" fill="var(--gold2)" font-family="DM Mono,monospace" font-size="11">${aOnly} only</text>
+    <text x="170" y="84" text-anchor="middle" fill="var(--silver)" font-family="DM Mono,monospace" font-size="11">${both}</text>
+    <text x="265" y="84" text-anchor="middle" fill="var(--teal)" font-family="DM Mono,monospace" font-size="11">${bOnly} only</text>
+    <text x="75" y="98" text-anchor="middle" fill="var(--muted)" font-family="DM Mono,monospace" font-size="9">A only</text>
+    <text x="170" y="98" text-anchor="middle" fill="var(--muted)" font-family="DM Mono,monospace" font-size="9">A∩B</text>
+    <text x="265" y="98" text-anchor="middle" fill="var(--muted)" font-family="DM Mono,monospace" font-size="9">B only</text>
+    <text x="120" y="20" text-anchor="middle" fill="var(--gold2)" font-family="Cormorant Garamond,serif" font-size="13" font-weight="600">A</text>
+    <text x="220" y="20" text-anchor="middle" fill="var(--teal)" font-family="Cormorant Garamond,serif" font-size="13" font-weight="600">B</text>
+  </svg>`;
+        document.getElementById("vennOut").innerHTML = venn;
+      }
+
+      // ── Footer year ──
+      document.getElementById("yr").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
